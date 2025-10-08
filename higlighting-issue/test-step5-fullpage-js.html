@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 5: Fullpage.js Test</title>
+    
+    <!-- All previous CSS -->
+    <link rel="stylesheet" type="text/css" href="includes/templates/goodwin/css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="includes/templates/goodwin/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="includes/templates/goodwin/css/lbs/style-dark.css">
+    <link rel="stylesheet" type="text/css" href="includes/templates/goodwin/css/lbs/style-light.css">
+    <link rel="stylesheet" type="text/css" href="includes/templates/goodwin/css/components-modern.css">
+    <link rel="stylesheet" type="text/css" href="includes/templates/goodwin/css/components.css">
+    
+    <!-- Fullpage.js CSS -->
+    <link rel="stylesheet" type="text/css" href="includes/templates/goodwin/jscript/vendor/fullpage/fullpage.min.css">
+    
+</head>
+<body>
+    <h1>Step 5: Fullpage.js Test</h1>
+    <p>This test adds fullpage.js which was initially suspected as the culprit.</p>
+    
+    <h2 class="custom-color">Header with custom-color class</h2>
+    <p>Another paragraph for testing selection across different elements.</p>
+    
+    <p class="empty_cart">Paragraph with empty_cart class - this was failing in production</p>
+    
+    <div class="contact-info-text">
+        <h3>Contact Information</h3>
+        <p>This mimics the contact page structure that was failing.</p>
+        <address>
+            123 Main Street<br>
+            City, State 12345<br>
+            Phone: (555) 123-4567
+        </address>
+    </div>
+    
+    <div class="contact-map">
+        <p>Map container content that should be selectable</p>
+        <iframe src="about:blank" style="width: 100%; height: 200px; border: 0;"></iframe>
+    </div>
+    
+    <div class="mainSlider">
+        <div class="slide-caption">
+            <div class="text-content">Slider text content for testing</div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Footer text that should also be selectable</p>
+    </footer>
+
+    <!-- Previous JavaScript -->
+    <script src="includes/templates/goodwin/jscript/jquery.min.js"></script>
+    <script src="includes/templates/goodwin/jscript/bootstrap.min.js"></script>
+    <script src="includes/templates/goodwin/jscript/template-app.js"></script>
+    
+    <!-- Add Fullpage.js - the original suspect -->
+    <script src="includes/templates/goodwin/jscript/vendor/fullpage/fullpage.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baseline Text Selection Test</title>
+    <!-- NO CSS OR JS - Pure baseline test -->
+</head>
+<body>
+    <h1>Text Selection Baseline Test</h1>
+    <p>This is a basic paragraph that should be fully selectable. Try selecting this text to verify baseline functionality works.</p>
+    
+    <h2 class="custom-color">Header with custom-color class</h2>
+    <p>Another paragraph for testing selection across different elements.</p>
+    
+    <p class="empty_cart">Paragraph with empty_cart class - this was failing in production</p>
+    
+    <div class="contact-info-text">
+        <h3>Contact Information</h3>
+        <p>This mimics the contact page structure that was failing.</p>
+        <address>
+            123 Main Street<br>
+            City, State 12345<br>
+            Phone: (555) 123-4567
+        </address>
+    </div>
+    
+    <div class="contact-map">
+        <p>Map container content that should be selectable</p>
+        <!-- No iframe in baseline test -->
+    </div>
+    
+    <div class="mainSlider">
+        <div class="slide-caption">
+            <div class="text-content">Slider text content for testing</div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Footer text that should also be selectable</p>
+    </footer>
+</body>
+</html>

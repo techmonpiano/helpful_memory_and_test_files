@@ -1,0 +1,33 @@
+{
+  "database_inventory": {
+    "export_date": "2025-08-25",
+    "database_status": "restored_and_functional",
+    "corruption_warnings": "present_but_non_blocking",
+    "missing_sst_files": ["001361.sst", "001362.sst", "001365.sst"]
+  },
+  "database_files": {
+    "total_sst_files": 143,
+    "largest_files": [
+      {"file": "001635.sst", "size_bytes": 2531360},
+      {"file": "001572.sst", "size_bytes": 1311829},
+      {"file": "001679.sst", "size_bytes": 1191076},
+      {"file": "001563.sst", "size_bytes": 1173138},
+      {"file": "001562.sst", "size_bytes": 1137625}
+    ],
+    "manifest_file": "MANIFEST-001774",
+    "current_file": "CURRENT",
+    "options_files": ["OPTIONS-001776", "OPTIONS-001757"]
+  },
+  "estimated_data": {
+    "users": 11,
+    "rooms": 63,
+    "total_database_size_mb": "~15-20MB estimated",
+    "message_history": "preserved_in_sst_files"
+  },
+  "backup_locations": [
+    "/home/user1/runtipi/app-data/my-runtipi-apps/continuwuity/data-corrupted-backup",
+    "/home/user1/runtipi/app-data/my-runtipi-apps/continuwuity/data-clean-backup", 
+    "/home/user1/continuwuity-clean-backup-2025-08-25-132716",
+    "/home/user1/runtipi/app-data/my-runtipi-apps/continuwuity/data_clean_backup"
+  ]
+}

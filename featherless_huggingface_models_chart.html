@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hugging Face Models Rankings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .section-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: white;
+            color: #2a5298;
+            border-bottom: 3px solid #2a5298;
+        }
+
+        .tab:hover:not(.active) {
+            background: #e9ecef;
+        }
+
+        .section {
+            display: none;
+            padding: 0;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: linear-gradient(135deg, #343a40, #495057);
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr {
+            transition: all 0.2s ease;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #e3f2fd;
+            transform: scale(1.01);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+
+        .rank {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #2a5298;
+            text-align: center;
+            width: 60px;
+        }
+
+        .model-name {
+            font-weight: 600;
+            color: #1e3c72;
+            min-width: 200px;
+        }
+
+        .model-id {
+            font-family: 'Courier New', monospace;
+            background: #f1f3f4;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #d73027;
+        }
+
+        .score {
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+            border-radius: 6px;
+            color: white;
+            min-width: 80px;
+        }
+
+        .score.excellent { background: linear-gradient(135deg, #4caf50, #45a049); }
+        .score.very-good { background: linear-gradient(135deg, #2196f3, #1976d2); }
+        .score.good { background: linear-gradient(135deg, #ff9800, #f57c00); }
+        .score.fair { background: linear-gradient(135deg, #ff5722, #d84315); }
+
+        .params {
+            text-align: center;
+            font-weight: 600;
+            color: #795548;
+        }
+
+        .features {
+            max-width: 250px;
+            line-height: 1.4;
+        }
+
+        .use-case {
+            max-width: 200px;
+            line-height: 1.4;
+        }
+
+        .benchmark {
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px;
+            font-size: 0.9em;
+            color: #856404;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            .legend {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Best Hugging Face Models Rankings</h1>
+            <p>Comprehensive comparison of top coding and search relevance models</p>
+        </div>
+
+        <div class="section-tabs">
+            <button class="tab active" onclick="showSection('coding')">🚀 Specialized Coding Models</button>
+            <button class="tab" onclick="showSection('general')">🤖 General Purpose (with Coding)</button>
+            <button class="tab" onclick="showSection('search')">🔍 Search Models</button>
+        </div>
+
+        <div id="coding" class="section active">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Model Name</th>
+                            <th>Hugging Face ID</th>
+                            <th>Parameters</th>
+                            <th>Score</th>
+                            <th>HumanEval</th>
+                            <th>Key Features</th>
+                            <th>Best Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="rank">1</td>
+                            <td class="model-name">Codestral 25.01</td>
+                            <td class="model-id">mistralai/Codestral-25.01</td>
+                            <td class="params">22B</td>
+                            <td class="score excellent">98/100</td>
+                            <td class="benchmark">86.6%</td>
+                            <td class="features">256K context, 2x faster than predecessor, 80+ languages, #1 LMsys leaderboard</td>
+                            <td class="use-case">State-of-the-art code completion, enterprise deployment</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">2</td>
+                            <td class="model-name">Codestral (Original)</td>
+                            <td class="model-id">mistralai/Codestral-22B</td>
+                            <td class="params">22B</td>
+                            <td class="score excellent">95/100</td>
+                            <td class="benchmark">81.1%</td>
+                            <td class="features">32K context, 80+ languages, strong FIM performance</td>
+                            <td class="use-case">Production code generation, fill-in-the-middle tasks</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">3</td>
+                            <td class="model-name">StarCoder2-15B</td>
+                            <td class="model-id">bigcode/starcoder2-15b</td>
+                            <td class="params">15B</td>
+                            <td class="score excellent">92/100</td>
+                            <td class="benchmark">35%</td>
+                            <td class="features">600+ languages, 16K context, matches CodeLlama-34B performance</td>
+                            <td class="use-case">Enterprise code generation, multi-language support</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">4</td>
+                            <td class="model-name">Codestral Mamba 7B</td>
+                            <td class="model-id">mistralai/Codestral-Mamba-7B</td>
+                            <td class="params">7B</td>
+                            <td class="score excellent">90/100</td>
+                            <td class="benchmark">75.0%</td>
+                            <td class="features">Mamba2 architecture, linear scaling, efficient memory use</td>
+                            <td class="use-case">Long sequence coding, memory-efficient deployment</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">5</td>
+                            <td class="model-name">CodeT5+-16B</td>
+                            <td class="model-id">Salesforce/codet5p-16b</td>
+                            <td class="params">16B</td>
+                            <td class="score very-good">88/100</td>
+                            <td class="benchmark">35%</td>
+                            <td class="features">Encoder-decoder, code understanding + generation, documentation</td>
+                            <td class="use-case">Code summarization, documentation, translation</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">6</td>
+                            <td class="model-name">Microsoft Phi-4</td>
+                            <td class="model-id">microsoft/Phi-4</td>
+                            <td class="params">14B</td>
+                            <td class="score very-good">86/100</td>
+                            <td class="benchmark">32%</td>
+                            <td class="features">Mathematical reasoning, compact architecture, multilingual</td>
+                            <td class="use-case">Complex problem solving, mathematical coding</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">7</td>
+                            <td class="model-name">StarCoder2-7B</td>
+                            <td class="model-id">bigcode/starcoder2-7b</td>
+                            <td class="params">7B</td>
+                            <td class="score very-good">84/100</td>
+                            <td class="benchmark">30%</td>
+                            <td class="features">Efficient deployment, broad language support, 16K context</td>
+                            <td class="use-case">Production deployments, resource-conscious environments</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">8</td>
+                            <td class="model-name">Replit Code v1.5</td>
+                            <td class="model-id">replit/replit-code-v1_5-3b</td>
+                            <td class="params">3.3B</td>
+                            <td class="score very-good">82/100</td>
+                            <td class="benchmark">28%</td>
+                            <td class="features">Best performance-to-size ratio, 30 languages, fast inference</td>
+                            <td class="use-case">Interactive coding assistants, edge deployment</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">9</td>
+                            <td class="model-name">CodeGen2-7B</td>
+                            <td class="model-id">Salesforce/codegen2-7B</td>
+                            <td class="params">7B</td>
+                            <td class="score very-good">80/100</td>
+                            <td class="benchmark">25%</td>
+                            <td class="features">Conversational programming, multi-turn interactions</td>
+                            <td class="use-case">Interactive programming sessions, educational tools</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">10</td>
+                            <td class="model-name">Mistral-7B-Instruct-v0.2</td>
+                            <td class="model-id">mistralai/Mistral-7B-Instruct-v0.2</td>
+                            <td class="params">7B</td>
+                            <td class="score good">76/100</td>
+                            <td class="benchmark">~20%</td>
+                            <td class="features">General purpose, 32K context, multilingual, efficient</td>
+                            <td class="use-case">General programming assistance, chatbots with code</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">11</td>
+                            <td class="model-name">CodeT5+-220M</td>
+                            <td class="model-id">Salesforce/codet5p-220m</td>
+                            <td class="params">220M</td>
+                            <td class="score good">74/100</td>
+                            <td class="benchmark">22%</td>
+                            <td class="features">Lightweight, encoder-decoder, fast training/fine-tuning</td>
+                            <td class="use-case">Custom fine-tuning, lightweight applications</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">12</td>
+                            <td class="model-name">IBM Granite-8B-Code</td>
+                            <td class="model-id">ibm-granite/granite-8b-code-base</td>
+                            <td class="params">8B</td>
+                            <td class="score good">72/100</td>
+                            <td class="benchmark">20%</td>
+                            <td class="features">Enterprise-grade, transparent training, reliable</td>
+                            <td class="use-case">Enterprise environments, compliance-critical applications</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="general" class="section">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Model Name</th>
+                            <th>Hugging Face ID</th>
+                            <th>Parameters</th>
+                            <th>Score</th>
+                            <th>HumanEval</th>
+                            <th>Key Features</th>
+                            <th>Best Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="rank">1</td>
+                            <td class="model-name">Mistral Small 3.2 24B Instruct ⭐</td>
+                            <td class="model-id">mistralai/Mistral-Small-3.2-24B-Instruct-2506</td>
+                            <td class="params">24B</td>
+                            <td class="score excellent">96/100</td>
+                            <td class="benchmark">92.9%</td>
+                            <td class="features">Latest gen (June 2025), 256K context, improved instruction following, reduced repetition</td>
+                            <td class="use-case">RECOMMENDED - Production agents, enterprise deployment</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">2</td>
+                            <td class="model-name">Mistral Small 3.2 24B Base</td>
+                            <td class="model-id">mistralai/Mistral-Small-3.2-24B-Base-2506</td>
+                            <td class="params">24B</td>
+                            <td class="score excellent">94/100</td>
+                            <td class="benchmark">-</td>
+                            <td class="features">Base model for fine-tuning, no instruction training, latest architecture</td>
+                            <td class="use-case">Custom fine-tuning, domain specialization</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">3</td>
+                            <td class="model-name">Mistral Small 3.1 24B Instruct</td>
+                            <td class="model-id">mistralai/Mistral-Small-3.1-24B-Instruct-2503</td>
+                            <td class="params">24B</td>
+                            <td class="score excellent">92/100</td>
+                            <td class="benchmark">88.9%</td>
+                            <td class="features">Vision capabilities, 128K context, multimodal, March 2025</td>
+                            <td class="use-case">Multimodal applications, document understanding, vision tasks</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">4</td>
+                            <td class="model-name">Mistral Small 3.1 24B Base</td>
+                            <td class="model-id">mistralai/Mistral-Small-3.1-24B-Base-2503</td>
+                            <td class="params">24B</td>
+                            <td class="score excellent">90/100</td>
+                            <td class="benchmark">-</td>
+                            <td class="features">Multimodal base model, vision understanding, no instruction tuning</td>
+                            <td class="use-case">Fine-tuning for multimodal applications</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">5</td>
+                            <td class="model-name">Mistral Small 3.0 24B Instruct</td>
+                            <td class="model-id">mistralai/Mistral-Small-24B-Instruct-2501</td>
+                            <td class="params">24B</td>
+                            <td class="score very-good">88/100</td>
+                            <td class="benchmark">85%+</td>
+                            <td class="features">Original Small 3, Apache 2.0, 81% MMLU, 3x faster than Llama 3.3 70B</td>
+                            <td class="use-case">Proven performance, enterprise deployment, subject matter experts</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">6</td>
+                            <td class="model-name">Mistral Small 3.0 24B Base</td>
+                            <td class="model-id">mistralai/Mistral-Small-24B-Base-2501</td>
+                            <td class="params">24B</td>
+                            <td class="score very-good">86/100</td>
+                            <td class="benchmark">-</td>
+                            <td class="features">Original base model, Apache 2.0, January 2025, stable foundation</td>
+                            <td class="use-case">Foundation for custom fine-tuning, research</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">7</td>
+                            <td class="model-name">Mistral-7B-Instruct-v0.3</td>
+                            <td class="model-id">mistralai/Mistral-7B-Instruct-v0.3</td>
+                            <td class="params">7B</td>
+                            <td class="score good">78/100</td>
+                            <td class="benchmark">~25%</td>
+                            <td class="features">Function calling, tool use, 32K context, multilingual</td>
+                            <td class="use-case">Lightweight agents, tool calling applications</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">8</td>
+                            <td class="model-name">Mistral-7B-Instruct-v0.2</td>
+                            <td class="model-id">mistralai/Mistral-7B-Instruct-v0.2</td>
+                            <td class="params">7B</td>
+                            <td class="score good">76/100</td>
+                            <td class="benchmark">~20%</td>
+                            <td class="features">General purpose, 32K context, multilingual, efficient</td>
+                            <td class="use-case">General programming assistance, chatbots with code</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="search" class="section">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Model Name</th>
+                            <th>Hugging Face ID</th>
+                            <th>Parameters</th>
+                            <th>Score</th>
+                            <th>MTEB Score</th>
+                            <th>Key Features</th>
+                            <th>Best Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="rank">1</td>
+                            <td class="model-name">NVIDIA NV-Embed-v2</td>
+                            <td class="model-id">nvidia/NV-Embed-v2</td>
+                            <td class="params">7B</td>
+                            <td class="score excellent">98/100</td>
+                            <td class="benchmark">72.31</td>
+                            <td class="features">State-of-the-art MTEB leader, 32K context, advanced training</td>
+                            <td class="use-case">High-accuracy search, enterprise retrieval</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">2</td>
+                            <td class="model-name">all-mpnet-base-v2</td>
+                            <td class="model-id">sentence-transformers/all-mpnet-base-v2</td>
+                            <td class="params">110M</td>
+                            <td class="score excellent">92/100</td>
+                            <td class="benchmark">63.3</td>
+                            <td class="features">BERT+XLNet strengths, 1B+ training pairs, 768-dim embeddings</td>
+                            <td class="use-case">General-purpose semantic search, balanced performance</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">3</td>
+                            <td class="model-name">NVIDIA NV-Embed-v1</td>
+                            <td class="model-id">nvidia/NV-Embed-v1</td>
+                            <td class="params">7B</td>
+                            <td class="score excellent">90/100</td>
+                            <td class="benchmark">69.1</td>
+                            <td class="features">Previous SOTA, proven reliability, strong retrieval</td>
+                            <td class="use-case">Production systems, proven performance needs</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">4</td>
+                            <td class="model-name">ms-marco-MiniLM-L6-v2</td>
+                            <td class="model-id">cross-encoder/ms-marco-MiniLM-L6-v2</td>
+                            <td class="params">23M</td>
+                            <td class="score very-good">88/100</td>
+                            <td class="benchmark">-</td>
+                            <td class="features">Cross-encoder reranking, query-document pairs, high precision</td>
+                            <td class="use-case">Two-stage retrieval, reranking top results</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">5</td>
+                            <td class="model-name">all-MiniLM-L6-v2</td>
+                            <td class="model-id">sentence-transformers/all-MiniLM-L6-v2</td>
+                            <td class="params">23M</td>
+                            <td class="score very-good">85/100</td>
+                            <td class="benchmark">56.3</td>
+                            <td class="features">5x faster inference, 384-dim embeddings, minimal quality loss</td>
+                            <td class="use-case">High-throughput applications, real-time search</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">6</td>
+                            <td class="model-name">mxbai-embed-large-v1</td>
+                            <td class="model-id">mixedbread-ai/mxbai-embed-large-v1</td>
+                            <td class="params">335M</td>
+                            <td class="score very-good">82/100</td>
+                            <td class="benchmark">64.6</td>
+                            <td class="features">Matryoshka learning, flexible embedding dimensions</td>
+                            <td class="use-case">Adaptive embedding sizes, memory optimization</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">7</td>
+                            <td class="model-name">ms-marco-electra-base</td>
+                            <td class="model-id">cross-encoder/ms-marco-electra-base</td>
+                            <td class="params">110M</td>
+                            <td class="score good">78/100</td>
+                            <td class="benchmark">-</td>
+                            <td class="features">ELECTRA-based cross-encoder, alternative architecture</td>
+                            <td class="use-case">Cross-encoder reranking, ELECTRA preference</td>
+                        </tr>
+                        <tr>
+                            <td class="rank">8</td>
+                            <td class="model-name">Neural Sparse Encoder</td>
+                            <td class="model-id">opensearch-project/opensearch-neural-sparse-encoding-v1</td>
+                            <td class="params">110M</td>
+                            <td class="score good">75/100</td>
+                            <td class="benchmark">-</td>
+                            <td class="features">Sparse retrieval, storage efficient, IDF-aware penalties</td>
+                            <td class="use-case">Large-scale sparse retrieval, storage optimization</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color excellent"></div>
+                <span>Excellent (90-100)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color very-good"></div>
+                <span>Very Good (80-89)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color good"></div>
+                <span>Good (70-79)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color fair"></div>
+                <span>Fair (60-69)</span>
+            </div>
+        </div>
+
+        <div class="note">
+            <strong>Note:</strong> Rankings are based on a combination of benchmark performance, real-world usage, community adoption, and technical capabilities. Scores are normalized across different model categories. Chinese-based and Meta models excluded as requested. 
+            <br><br>
+            <strong>Key Updates:</strong> Codestral 25.01 leads specialized coding models with 86.6% HumanEval and #1 LMsys ranking. Mistral Small 3.2 24B excels in general-purpose tasks with strong coding capabilities (92.9% HumanEval Plus). All Mistral models offer excellent Apache 2.0 licensing and local deployment options.
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Activate clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Add hover effects and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.02)';
+                });
+                row.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

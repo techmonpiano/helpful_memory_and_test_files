@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text Selection Test</title>
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-area {
+            border: 2px solid #ccc;
+            padding: 20px;
+            margin: 20px 0;
+            background: #f5f5f5;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>Text Selection Test Page</h1>
+    
+    <div class="test-area">
+        <h2>Test Area 1: Basic Text</h2>
+        <p>This is a paragraph of text. You should be able to select this text with your mouse.</p>
+        <p>If you can highlight this text by clicking and dragging, the text selection is working!</p>
+    </div>
+
+    <div class="test-area">
+        <h2>Test Area 2: Complex Content</h2>
+        <div>
+            <span>This is text inside a span.</span>
+            <strong>This is bold text.</strong>
+            <em>This is italic text.</em>
+        </div>
+        <ul>
+            <li>List item 1 - should be selectable</li>
+            <li>List item 2 - should be selectable</li>
+            <li>List item 3 - should be selectable</li>
+        </ul>
+    </div>
+
+    <div class="status info">
+        <h3>Test Instructions:</h3>
+        <ol>
+            <li>Try to select text with your mouse (click and drag)</li>
+            <li>Try to select all text with Ctrl+A (or Cmd+A on Mac)</li>
+            <li>Try to double-click to select a word</li>
+            <li>Try to triple-click to select a paragraph</li>
+        </ol>
+    </div>
+
+    <div class="status success">
+        <h3>Expected Result:</h3>
+        <p>✅ All text on this page should be selectable</p>
+        <p>✅ Text should highlight when you drag your mouse over it</p>
+        <p>✅ You should be able to copy selected text</p>
+    </div>
+
+    <script>
+        // Test programmatic selection
+        function testSelection() {
+            const testText = document.querySelector('p');
+            const range = document.createRange();
+            const selection = window.getSelection();
+            
+            range.selectNodeContents(testText);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            const selectedText = selection.toString();
+            console.log('Programmatic selection test:', selectedText.length > 0 ? 'PASSED' : 'FAILED');
+            console.log('Selected text:', selectedText.substring(0, 50) + '...');
+            
+            // Clear selection after test
+            setTimeout(() => {
+                selection.removeAllRanges();
+            }, 2000);
+        }
+        
+        // Run test after page loads
+        window.addEventListener('load', () => {
+            console.log('Page loaded. Testing text selection...');
+            
+            // Check computed styles
+            const p = document.querySelector('p');
+            const styles = window.getComputedStyle(p);
+            console.log('user-select:', styles.userSelect);
+            console.log('webkit-user-select:', styles.webkitUserSelect);
+            
+            // Test programmatic selection
+            testSelection();
+        });
+    </script>
+</body>
+</html>

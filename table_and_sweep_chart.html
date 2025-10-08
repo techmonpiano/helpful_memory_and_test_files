@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Table and Sweep Floor</title>
+    <style>
+        @media print {
+            body { margin: 0; }
+            .page-break { page-break-before: always; }
+            .no-break { page-break-inside: avoid; }
+        }
+        
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 4px solid #FF6B6B;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            color: #FF6B6B;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .smiley-line {
+            font-size: 1.5em;
+            margin: 10px 0;
+            letter-spacing: 8px;
+            color: #FFD700;
+            text-align: center;
+        }
+        
+        .divider-line {
+            height: 6px;
+            background: #4ECDC4;
+            border-radius: 3px;
+            margin: 20px 0;
+        }
+        
+        .todo-section {
+            margin: 30px 0;
+            border: 3px solid #4ECDC4;
+            border-radius: 20px;
+            background: #F8F9FA;
+            padding: 20px;
+        }
+        
+        .main-task {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(45deg, #E8F5E8, #D4F1D4);
+            border-radius: 15px;
+            border: 3px solid #4ECDC4;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2C3E50;
+        }
+        
+        .subtask {
+            display: flex;
+            align-items: center;
+            margin: 15px 0 15px 20px;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            border: 2px dashed #95A5A6;
+            font-size: 1.1em;
+            color: #34495E;
+        }
+        
+        .checkbox {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #4ECDC4;
+            border-radius: 6px;
+            margin-right: 15px;
+            background: white;
+            flex-shrink: 0;
+        }
+        
+        .main-checkbox {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #4ECDC4;
+            border-radius: 8px;
+            margin-right: 20px;
+            background: white;
+            flex-shrink: 0;
+        }
+        
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.0em;
+            color: #7B68EE;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- PAGE 1: Clear the Table -->
+        <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: #F0F8FF; border-radius: 10px; border: 2px solid #87CEEB;">
+            <div style="font-size: 0.9em; color: #4682B4; font-style: italic; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <span style="font-size: 1.2em;">📖</span>
+                <span>"Whatever you do, work at it with all your heart" - Colossians 3:23</span>
+            </div>
+        </div>
+        
+        <div class="header">
+            <div class="smiley-line">😊 😄 😃 😊 😄</div>
+            <h1>Clear the Table</h1>
+            <div style="font-size: 1.2em; color: #7B68EE; font-weight: bold; text-align: center;">
+                🌟 Let's get this done! 🌟
+            </div>
+        </div>
+        
+        <div class="divider-line"></div>
+        
+        <div class="todo-section no-break">
+            <div class="main-task">
+                <div class="main-checkbox"></div>
+                <div class="emoji">🍽️</div>
+                <div>Clear the table / Clean it</div>
+            </div>
+            
+            <div class="subtask">
+                <div class="checkbox"></div>
+                <div class="emoji">🍽️</div>
+                <div>Take plates and spoons, forks, knives to dishwasher or counter</div>
+            </div>
+            
+            <div class="subtask">
+                <div class="checkbox"></div>
+                <div class="emoji">🥤</div>
+                <div>Take cups to dishwasher</div>
+            </div>
+            
+            <div class="subtask">
+                <div class="checkbox"></div>
+                <div class="emoji">🍲</div>
+                <div>Take serving dishes and pots to counter or dishwasher</div>
+            </div>
+            
+            <div class="subtask">
+                <div class="checkbox"></div>
+                <div class="emoji">🧽</div>
+                <div>Spray / wipe table with wash cloth</div>
+            </div>
+        </div>
+        
+        <div style="height: 3px; background: #4ECDC4; border-radius: 1px; margin: 20px 0;"></div>
+        
+        <div style="text-align: center; margin: 15px 0; padding: 12px; background: linear-gradient(45deg, #FFE4E1, #F0FFF0); border-radius: 12px; border: 2px solid #32CD32;">
+            <div style="font-size: 1.4em; color: #32CD32; font-weight: bold; margin-bottom: 6px;">
+                🎉 GREAT JOB! 🎉
+            </div>
+            <div style="font-size: 0.9em; color: #FF69B4; font-weight: bold;">
+                Table is all clean! 💕
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div style="font-size: 0.75em; margin-top: 8px; color: #95A5A6;">
+                ✓ Check off each box when you finish!
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE 2: Sweep Floor -->
+    <div class="container page-break">
+        <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: #F0F8FF; border-radius: 10px; border: 2px solid #87CEEB;">
+            <div style="font-size: 0.9em; color: #4682B4; font-style: italic; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <span style="font-size: 1.2em;">📖</span>
+                <span>"Whatever you do, work at it with all your heart" - Colossians 3:23</span>
+            </div>
+        </div>
+        
+        <div class="header">
+            <div class="smiley-line">😊 😄 😃 😊 😄</div>
+            <h1>Sweep Floor - Pick up things</h1>
+            <div style="font-size: 1.2em; color: #7B68EE; font-weight: bold; text-align: center;">
+                🌟 Let's get this done! 🌟
+            </div>
+        </div>
+        
+        <div class="divider-line"></div>
+        
+        <div class="todo-section no-break">
+            <div class="main-task">
+                <div class="main-checkbox"></div>
+                <div class="emoji">🧹</div>
+                <div>Sweep the floor</div>
+            </div>
+            
+            <div class="subtask">
+                <div class="checkbox"></div>
+                <div class="emoji">🪑</div>
+                <div>Move chairs away to kitchen / living room so you can sweep under table easily</div>
+            </div>
+            
+            <div class="subtask">
+                <div class="checkbox"></div>
+                <div class="emoji">🧹</div>
+                <div>Get broom, dust pan/brush and sweep</div>
+            </div>
+            
+            <div class="subtask">
+                <div class="checkbox"></div>
+                <div class="emoji">🔄</div>
+                <div>Start from under the table and get that dirt onto pile</div>
+            </div>
+            
+            <div class="subtask">
+                <div class="checkbox"></div>
+                <div class="emoji">🌪️</div>
+                <div>Go to edge of room on all sides and sweep dirt into central location in piles</div>
+            </div>
+            
+            <div class="subtask">
+                <div class="checkbox"></div>
+                <div class="emoji">🗑️</div>
+                <div>Get dust pan and brush and sweep them up and put in trash can</div>
+            </div>
+        </div>
+        
+        <div style="height: 3px; background: #4ECDC4; border-radius: 1px; margin: 20px 0;"></div>
+        
+        <div style="text-align: center; margin: 15px 0; padding: 12px; background: linear-gradient(45deg, #FFE4E1, #F0FFF0); border-radius: 12px; border: 2px solid #32CD32;">
+            <div style="font-size: 1.6em; color: #32CD32; font-weight: bold; margin-bottom: 8px;">
+                🎉 ALL DONE! 🎉
+            </div>
+            <div style="font-size: 1.0em; color: #FF69B4; font-weight: bold; margin-bottom: 6px;">
+                Thank you from Mommy/Daddy! 💕
+            </div>
+            <div style="font-size: 0.9em; color: #4169E1; font-weight: bold;">
+                🏃‍♂️ Have some free time! 🎮
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div style="font-size: 0.75em; margin-top: 8px; color: #95A5A6;">
+                ✓ Check off each box when you finish!
+            </div>
+        </div>
+    </div>
+</body>
+</html>

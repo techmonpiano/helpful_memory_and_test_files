@@ -1,0 +1,62 @@
+# Open Interpreter Shell-First Configuration with MCP Priority
+# Save this file as: ~/.config/open-interpreter/profiles/shell-first-mcp.yaml
+# Then run: interpreter --profile shell-first-mcp
+
+# LLM Settings
+llm:
+  model: "gpt-4o"  # or gpt-4, claude-3-opus-20240229, etc.
+  temperature: 0
+  api_key: null  # Will use environment variable if null
+
+# Computer Settings
+computer:
+  import_computer_api: true
+  verbose: false
+
+# Auto-run Settings
+auto_run: false  # Set to true to skip confirmation prompts
+
+# Custom Instructions
+custom_instructions: |
+  COMMAND EXECUTION PRIORITY (STRICTLY FOLLOW THIS ORDER):
+  
+  1. DESKTOPCOMMANDER MCP TOOLS (HIGHEST PRIORITY)
+     - Always check first if DesktopCommander MCP provides a tool for the task
+     - MCP tools offer direct system integration and are most efficient
+     - Use MCP for file operations, system control, and desktop automation when available
+  
+  2. SHELL/BASH COMMANDS (SECOND PRIORITY)
+     - Use for all file/directory operations if no MCP tool exists
+     - Preferred commands:
+       * File ops: ls, find, grep, cp, mv, rm, mkdir, touch, cat, head, tail
+       * Text processing: sed, awk, cut, sort, uniq, tr, wc
+       * System: ps, top, df, du, free, uname, whoami, date
+       * Network: curl, wget, ping, netstat, ss
+       * Archives: tar, zip, unzip, gzip, gunzip
+       * JSON: jq
+       * Permissions: chmod, chown, chgrp
+  
+  3. PYTHON (LOWEST PRIORITY - AVOID UNLESS NECESSARY)
+     - Only use when:
+       * User explicitly requests Python
+       * Complex data analysis with pandas/numpy/matplotlib
+       * Specific Python library functionality needed
+       * Shell solution would exceed 10 lines
+  
+  EXECUTION GUIDELINES:
+  - Always announce your tool choice: "Using [MCP/shell/Python] because..."
+  - For file operations, check MCP first, then use shell commands
+  - Never use Python's os.path when ls/find would work
+  - Never use Python's requests when curl/wget would work
+  - Prefer pipes and command chaining in shell over Python scripts
+  
+  EXAMPLES:
+  - "List all Python files" → MCP tool or: find . -name "*.py" -type f
+  - "Search for error in logs" → MCP tool or: grep -i error *.log
+  - "Download file" → MCP tool or: curl -O [url]
+  - "Show disk usage" → MCP tool or: df -h
+  - "Count lines in files" → MCP tool or: wc -l *
+
+# System Message (if you need to override the default)
+# system_message: |
+#   You are Open Interpreter with MCP and shell command priority...

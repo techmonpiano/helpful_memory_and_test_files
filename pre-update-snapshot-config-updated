@@ -1,0 +1,44 @@
+# Configuration for pre-update-snapshot.sh
+# Copy this file to /etc/default/pre-update-snapshot to customize behavior
+
+# Log file location
+#LOG_FILE="/var/log/auto-update-snapshots.log"
+
+# Minimum free disk space percentage required for snapshots
+#MIN_FREE_SPACE_PERCENT=10
+
+# Maximum time to wait for existing processes to complete (in seconds)
+#PROCESS_WAIT_TIMEOUT=300
+
+# Interactive timeout for snapshot operations and user prompts (in seconds)
+# This is the timeout for both snapshot tool execution and waiting for user input
+#INTERACTIVE_TIMEOUT=30
+
+# Enable interactive prompts when snapshots fail or timeout (true/false)
+# When true, the script will prompt the user to bypass snapshots if they fail
+# When false, the script will follow non-interactive behavior
+#ENABLE_INTERACTIVE_PROMPT=true
+
+# Allow skipping snapshots in certain conditions (true/false)
+# When true, the script will proceed without snapshots if:
+# - SKIP_SNAPSHOTS environment variable is set
+# - Not on BTRFS filesystem
+# - All snapshot tools fail but system needs to proceed
+#ALLOW_SKIP_SNAPSHOTS=false
+
+# Kill processes that have been running for more than 1 hour (true/false)
+# Use with caution - only enable if you're confident stuck processes should be killed
+#KILL_STUCK_PROCESSES=false
+
+# Example usage:
+# To temporarily skip snapshots for one operation:
+#   SKIP_SNAPSHOTS=1 apt install package-name
+#
+# To allow the system to proceed without snapshots when tools fail:
+#   Set ALLOW_SKIP_SNAPSHOTS=true in this file
+#
+# To disable interactive prompts (for automated systems):
+#   Set ENABLE_INTERACTIVE_PROMPT=false in this file
+#
+# To change the timeout for snapshot operations:
+#   Set INTERACTIVE_TIMEOUT=60 for longer timeout (60 seconds)

@@ -1,0 +1,99 @@
+Aug-16-2025 08:17:58 (1755346678)
+getLineItemDetails 7 - subtotal comparisons
+BEFORE line-item calcs: Array
+(
+    [AMT] => 41.64
+    [ITEMAMT] => 33.48
+    [TAXAMT] => 0
+    [SHIPPINGAMT] => 8.16
+    [SHIPDISCAMT] => 0
+    [HANDLINGAMT] => 0
+    [INSURANCEAMT] => 0
+)
+AFTER doing line-item calcs: Array
+(
+    [AMT] => 41.64
+    [ITEMAMT] => 33.48
+    [TAXAMT] => 0
+    [SHIPPINGAMT] => 8.16
+    [SHIPDISCAMT] => 0
+    [HANDLINGAMT] => 0
+    [INSURANCEAMT] => 0
+    [L_NUMBER0] => 2140103-A
+    [L_NAME0] => Brush for ONAN 214-0103 and A053W559 - RV Genset, SEE NOTES [114]
+    [L_QTY0] => 2
+    [L_AMT0] => 9.99
+    [L_NUMBER1] => 212-1276-03
+    [L_NAME1] => 212-1276-03 Spring, Brush, Onan RV [985]
+    [L_QTY1] => 2
+    [L_AMT1] => 6.75
+)
+
+=================================
+
+Aug-16-2025 08:17:58 (1755346678)
+getLineItemDetails 8
+checking subtotals... 
+Array
+(
+    [calculated total] => 41.64
+    [AMT] => 41.64
+    [ITEMAMT] => 33.48
+    [SHIPPINGAMT] => 8.16
+)
+
+-------------------
+difference: 0  (abs+rounded: 0)
+=================================
+
+Aug-16-2025 08:17:58 (1755346678)
+getLineItemDetails 10
+subtotals balance - okay
+=================================
+
+Aug-16-2025 08:17:58 (1755346678)
+before_process - DP-1
+Beginning DP mode
+=================================
+
+Aug-16-2025 08:17:58 (1755346678)
+before_process - DP-4
+options: Array
+(
+    [AMT] => 41.64
+    [ITEMAMT] => 33.48
+    [SHIPPINGAMT] => 8.16
+    [L_NUMBER0] => 2140103-A
+    [L_NAME0] => Brush for ONAN 214-0103 and A053W559 - RV Genset, SEE NOTES [114]
+    [L_QTY0] => 2
+    [L_AMT0] => 9.99
+    [L_NUMBER1] => 212-1276-03
+    [L_NAME1] => 212-1276-03 Spring, Brush, Onan RV [985]
+    [L_QTY1] => 2
+    [L_AMT1] => 6.75
+    [STREET] => **
+    [ZIP] => **
+    [CITY] => **
+    [STATE] => **
+    [EXPDATE] => **
+    [EMAIL] => dan***@yah***.com
+    [PHONENUM] => **
+    [BUTTONSOURCE] => ZenCart-DP_us
+    [CURRENCY] => USD
+    [CARDISSUE] => 
+    [CUSTOM] => DP-118370-1755346678
+    [INVNUM] => 118370-1755346678-[AdvancedServiceAndPartsLLCASAP]
+    [COUNTRY] => US
+    [PAYMENTACTION] => Authorization
+    [SHIPTONAME] => **
+    [SHIPTOSTREET] => **
+    [SHIPTOCITY] => **
+    [SHIPTOZIP] => **
+    [SHIPTOSTATE] => **
+    [SHIPTOCOUNTRY] => **
+)
+
+Rest of data: 
+41.64 ** ** [REDACTED-NAME] Visa
+=================================
+

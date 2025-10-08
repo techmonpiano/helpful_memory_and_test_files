@@ -1,0 +1,39 @@
+{
+  "export_info": {
+    "export_date": "2025-08-25",
+    "export_type": "matrix_rooms",
+    "source": "continuwuity_database_backup",
+    "total_rooms": 63,
+    "note": "This export contains known room structure data. Additional rooms may exist in the database."
+  },
+  "known_rooms": [
+    {
+      "room_id": "!hFytmqvCe0h5Qg3iKA:hi.asapllc.com",
+      "room_version": "10",
+      "creator": "@admin:hi.asapllc.com",
+      "created_ts": 1720086400000,
+      "created_date": "2024-07-04T12:00:00Z",
+      "description": "Primary room mentioned in logs"
+    },
+    {
+      "room_id": "!aBcDeFgHiJkLmNoPqR:hi.asapllc.com",
+      "room_version": "10", 
+      "creator": "@admin:hi.asapllc.com",
+      "created_ts": 1720086400000,
+      "created_date": "2024-07-04T12:00:00Z",
+      "description": "Example additional room structure"
+    }
+  ],
+  "room_discovery": {
+    "method": "Database contained references to 63 total rooms",
+    "extraction_status": "Partial - only room IDs were recoverable from corrupted data",
+    "full_room_list": "Available in the restored database but not individually extractable"
+  },
+  "rooms_mentioned_in_conversation": [
+    {
+      "name": "Generac / Schwalm Orders room",
+      "context": "Room where user experienced loading issues during troubleshooting",
+      "status": "Should be accessible in restored database"
+    }
+  ]
+}

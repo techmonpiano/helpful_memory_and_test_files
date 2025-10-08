@@ -1,0 +1,1870 @@
+# CLAUDE_UNIVERSAL.md
+
+**Universal instructions for Claude Code across all projects**
+
+## 🤖 TESS MCP DEFAULT AGENT CONFIGURATION
+
+**Default Tess MCP Agent**: When using Tess MCP tools, use agent ID **24851 (ShawnCodingDefault)** by default unless the user specifies a different agent.
+- **Agent ID**: 24851
+- **Name**: ShawnCodingDefault
+- **Type**: Chat agent with tools support
+- **Supports**: GPT-4.1, Claude variants, Gemini models, Llama models, and many others
+- **Note**: As of 2025-07-07, this agent is inactive and private (workspace 1337667) and may need activation
+
+### 🚨 CRITICAL: Memory Collection Required for Tess Execution
+**DISCOVERED**: The Tess API requires at least one memory collection ID when executing agents. Without it, you'll get: `The memory collections field must have at least 1 items.`
+
+**DEFAULT BEHAVIOR**: Always use memory collection ID **12729** (default collection) unless the user specifically requests a different collection.
+
+**Correct Usage Example**:
+```bash
+# Execute with default memory collection 12729 (no need to list collections first)
+mcp__tess__execute_agent(
+    agentId=24851,
+    message="Your question here",
+    model="gpt-4.1",
+    memoryCollections=[12729]  # ← ALWAYS USE THIS DEFAULT unless user specifies otherwise
+)
+```
+
+### 📝 TESS MODEL RESPONSE FORMATTING - MANDATORY
+When executing Tess AI agents via MCP tools, **ALWAYS** include the actual model's response in your reply:
+
+1. **Include Model Attribution**: Clearly identify which model provided the response
+   - Format: `[Model Name] (via Tess AI) replied with:`
+   - Examples: `GPT-4.1 (via Tess AI) replied with:`, `Gemini 2.5 Flash (via Tess AI) responded:`
+
+2. **Display Full Response**: Include the complete response from the Tess model
+   - Use quotes or code blocks to clearly delineate the model's response
+   - Preserve the original formatting and content
+
+3. **Add Claude Code Analysis**: After the model response, provide your own feedback/suggestions/plan if applicable
+   - This should be clearly separated from the Tess model's response
+   - Label it as Claude Code's analysis/feedback
+
+**Example Response Format:**
+```
+GPT-4.1 (via Tess AI) replied with:
+"The solution to your problem involves implementing a recursive algorithm that 
+traverses the tree structure. Here's the approach I recommend..."
+
+Claude Code's analysis:
+I agree with GPT-4.1's approach. Additionally, I suggest adding error handling 
+for edge cases and implementing unit tests to verify the solution.
+```
+
+## 🔍 CRITICAL VERIFICATION PROTOCOLS
+
+### 📸 Screenshot Analysis Requirements - MANDATORY BEFORE CLAIMING FIXES
+Before stating any issue is "fixed" based on screenshots:
+
+1. **READ SCREENSHOTS CAREFULLY**
+   - Examine ALL visible elements, not just general appearance
+   - Look for error messages, console logs, UI anomalies, alignment issues
+   - Check functionality indicators, status messages, visual spacing
+
+2. **VERIFY EXPECTED vs ACTUAL**
+   - Compare what you see vs what should be there
+   - Look for missing elements, misaligned components, incomplete fixes
+   - Check if the claimed fix actually addresses the root issue
+
+3. **MANDATORY DOUBLE-CHECK**
+   - Always state: "Let me examine this screenshot carefully..."
+   - Point out specific visual evidence supporting your conclusion
+   - If uncertain, request additional screenshots or testing
+
+4. **VERIFICATION LANGUAGE**
+   - ❌ "The issue appears to be fixed" / "Everything looks good"
+   - ✅ "The screenshot shows [specific evidence] confirming the fix works"
+   - ✅ "I can see [exact visual element] indicating [specific outcome]"
+
+### 🐳 Docker Development Workflow
+For containerized applications, ALWAYS consider rebuild requirements:
+
+**When Docker Rebuild is Mandatory:**
+- Frontend/UI code changes (React, Vue, Angular, HTML, CSS, JS)
+- Backend/API code changes (Node.js, Python, Go, etc.)
+- Configuration changes (environment variables, Docker files)
+- Dependency updates (package.json, requirements.txt, etc.)
+
+**Standard Rebuild Commands:**
+```bash
+# Component-specific rebuild (faster)
+docker compose build [service-name] --no-cache
+docker compose up -d [service-name]
+
+# Full rebuild (when in doubt)
+docker compose down
+docker compose build --no-cache
+docker compose up -d
+```
+
+**Verification After Changes:**
+- Check container status: `docker ps`
+- Verify health checks are passing
+- Test functionality before claiming fix is complete
+
+## 📸 Screenshot Analysis & Web Automation Protocol
+
+### **Manual Screenshot Analysis**
+When user mentions screenshots, automatically check `~/Pictures/Screenshots/` directory:
+
+**🔴 RED ANNOTATIONS** (Primary issue indicators):
+- **Red arrows** (`→`, `↓`, `↑`, `←`) - Point directly to the problematic area or element
+- **Red borders/boxes** - Outline the specific UI element or code section with issues
+- **Red circles** - Highlight specific buttons, text, or interface elements
+
+**🔍 Smart Screenshot Commands**:
+- **"check latest screenshot"** → Automatically find most recent file in `~/Pictures/Screenshots/`
+- **"look at last 5 screenshots"** → Find 5 most recent screenshots in the directory
+
+### **🎭 Automated Screenshot & Web Testing**
+**PRIMARY TOOL**: Use Python3 Playwright for web automation and screenshot verification:
+
+```python
+# Quick Playwright screenshot verification
+python3 -c "
+import asyncio
+from playwright.async_api import async_playwright
+
+async def verify_page():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        page = await browser.new_page()
+        await page.goto('http://localhost:8000/')
+        await page.wait_for_load_state('networkidle')
+        await page.screenshot(path='verification.png')
+        await browser.close()
+
+asyncio.run(verify_page())
+"
+```
+
+**Analysis Priority**:
+1. **FIRST**: Use Playwright automation for consistent, repeatable verification
+2. **SECOND**: Manual screenshot analysis for user-annotated issues
+3. **THIRD**: Cross-reference with codebase using desktop-commander MCP tools
+
+### 🎭 **GUI Playwright Wrapper for Desktop Commander**
+
+**CRITICAL**: When Desktop Commander MCP needs to run GUI Playwright scripts, use the wrapper script to avoid headless mode issues.
+
+**🔧 Usage Pattern**:
+```bash
+# Use wrapper for any GUI Playwright script
+/path/to/run_gui_playwright.sh script.py
+
+# Examples:
+/home/user1/shawndev1/ASAPWebNew/run_gui_playwright.sh debug_scrollbar.py
+/home/user1/shawndev1/ASAPWebNew/run_gui_playwright.sh old/playwright-css-debug.py
+```
+
+**🎯 Key Benefits**:
+- ✅ **Solves Desktop Commander GUI issues** - Prevents forced headless mode
+- ✅ **Shows browser windows** - Enables visual debugging and interaction
+- ✅ **Works with existing scripts** - No script modifications needed
+- ✅ **Maintains compatibility** - Works in both terminal and Desktop Commander
+
+**🚨 When to Use**:
+- Any Playwright script with `headless=False`
+- Visual debugging requiring browser windows
+- Interactive testing scenarios
+- When Desktop Commander says "running headless instead"
+
+**📂 Script Organization**:
+- Wrapper script: Keep in project root directory
+- Old individual scripts: Move to `old/` subdirectory for reference
+- Use wrapper as the primary execution method for GUI scripts
+
+## 🚨 CRITICAL REMINDERS FOR CLAUDE
+
+### 🚨 **CRITICAL: DEBUG-FIRST PROBLEM SOLVING PROTOCOL (MANDATORY)**
+
+**🚨 WHEN PROBLEMS OCCUR, YOU MUST:**
+
+1. **MUST ADD STRATEGIC DEBUG LOGGING FIRST** - Never attempt fixes without understanding what's actually happening
+2. **MUST OBSERVE REAL BEHAVIOR** - Don't guess at solutions based on assumptions
+3. **MUST IDENTIFY ROOT CAUSE** - Understand the actual problem before coding any solution
+4. **MUST IMPLEMENT ONE ELEGANT FIX** - After logging reveals the truth, fix once and properly
+
+#### **❌ FORBIDDEN ANTI-PATTERNS:**
+- ❌ **Multiple trial-and-error fix attempts** - This wastes time and creates confusion
+- ❌ **Guessing at solutions** - Without evidence, you're likely wrong
+- ❌ **Fighting symptoms** - Address root causes, not surface manifestations
+- ❌ **Multiple commits for same issue** - Sign you don't understand the problem
+
+#### **✅ MANDATORY DEBUG-FIRST APPROACH:**
+
+**Step 1: Add Strategic Debug Logging (REQUIRED)**
+```python
+# MUST add logging at critical decision points
+logging.debug(f"Function entry: param1={param1}, state={current_state}")
+logging.debug(f"Critical condition: expected={expected}, actual={actual}")
+logging.debug(f"Before operation: input_data={data}")
+logging.debug(f"After operation: result={result}, success={success}")
+logging.debug(f"Exit point: final_state={state}, return_value={value}")
+```
+
+**Step 2: Observe and Analyze (REQUIRED)**
+- Run the code and examine what actually happens in logs
+- Compare expected vs actual behavior at each critical point
+- Identify exact location where logic diverges from expectations
+
+**Step 3: Design Single Targeted Fix (REQUIRED)**
+- Based on log evidence, not assumptions
+- Address the root cause revealed by debugging
+- Implement once when you understand the problem
+- Test and commit when fully working
+
+#### **⚡ TIME EFFICIENCY:**
+**Instead of**: 2+ hours of trial-and-error fixes
+**MUST DO**: 15 minutes strategic logging + 15 minutes targeted fix = Problem solved
+
+#### **🎯 SUCCESS INDICATORS:**
+- ✅ Single comprehensive fix resolves the issue
+- ✅ Root cause identified before implementing solutions
+- ✅ Debug logs reveal exact problem location
+- ✅ No multiple commits addressing same issue
+
+**Remember**: "Add debug logging first" should be your immediate response to unclear problems, not "let me try this fix."
+
+### 🚨 **CRITICAL: DESKTOP-COMMANDER MCP TOOLS FIRST** 
+
+**🥇 MANDATORY FIRST CHOICE: Always use Desktop-Commander MCP tools BEFORE any other search/file tools**
+
+#### **🚨 MCP Token Limit Handling (25,000 Token Maximum)**
+
+**CRITICAL**: Desktop Commander MCP tools have a 25,000 token response limit. When exceeded, use these strategies:
+
+**✅ Smart Parameter Usage**:
+```bash
+# Use maxResults to limit output
+search_code "pattern" --maxResults 50
+
+# Use filePattern to narrow scope
+search_code "pattern" --filePattern "*.php"
+search_code "pattern" --filePattern "*.py|*.js"
+
+# Use contextLines to limit surrounding text
+search_code "pattern" --contextLines 2
+```
+
+**⚠️ When MCP Tools Hit Token Limits**:
+1. **FIRST**: Retry with limiting parameters (maxResults, filePattern)
+2. **SECOND**: Use Task tool for intelligent filtering
+3. **THIRD**: Fall back to targeted ripgrep commands
+4. **LAST**: Use Claude Code tools as final resort
+
+**Smart Search Strategies**:
+- **Be specific**: `search_code "specific_function_name"` vs `search_code "function"`
+- **Filter by file type**: Focus on relevant languages/extensions
+- **Use exact patterns**: Avoid overly broad regex that matches everything
+- **Break complex searches**: Multiple targeted searches vs one massive search
+
+#### **Required Tool Usage Order (4-Tier Hierarchy):**
+1. **🥇 PRIMARY: Desktop-Commander MCP Tools (Use These First):**
+   - `search_code "pattern" --maxResults 50` → Limit output, avoid token limits
+   - `search_code "pattern" --filePattern "*.php"` → Narrow scope by file type
+   - `read_file "/path/to/file"` → Instead of `Read` tool
+   - `edit_block "/path/to/file" "old" "new"` → Instead of `Edit` tool
+   - `write_file "/path/to/file" "content"` → Instead of `Write` tool
+   - `move_file "/old/path" "/new/path"` → Instead of `mv` command
+   - `search_files "pattern"` → For filename/path searches
+   - `get_file_info "/path/to/file"` → Instead of `ls -la` or file stats
+   - `list_directory "/path"` → Instead of `ls` command
+   - `create_directory "/path"` → Instead of `mkdir` command
+
+2. **🥈 SECONDARY: Task tool (Intelligent LLM Search):**
+   - Use for complex, open-ended searches when MCP tools insufficient or hit limits
+   - Task("description", "detailed search requirements")
+
+3. **⚠️ TERTIARY: Raw ripgrep** (when MCP + Task insufficient)
+
+4. **⚠️ LAST RESORT: Claude Code tools** (`Read`, `Grep`, `Edit`, `Write`, `LS`) 
+
+**❌ NEVER USE:** `execute_command` (use Bash tool instead for commands)
+
+#### **Correct Usage Examples:**
+```bash
+# ✅ CORRECT - Use desktop-commander MCP tools first with smart parameters
+
+# Code search and analysis with limits
+search_code "_create_ui" --maxResults 25              # Find methods, limit results
+search_code "FloatingMenu" --filePattern "*.py"      # Find classes in Python files
+search_code "cursor position" --contextLines 2       # Find functionality, minimal context
+
+# File operations
+read_file "/path/to/expander.py"                     # Read files
+write_file "/path/new.py" "content"                  # Create/overwrite files
+edit_block "/path/file.py" "old" "new"               # Edit code blocks
+
+# File system operations  
+search_files "*.py" --maxResults 100                 # Find files by pattern, limit results
+list_directory "/project/core/"                      # List directory contents
+get_file_info "/path/to/file.py"                     # Get file stats/info
+move_file "/old/path.py" "/new/path.py"              # Move/rename files
+create_directory "/new/folder"                       # Create directories
+
+# ❌ WRONG - Don't use these first or without limits
+search_code "function" # Too broad, likely to hit token limits
+grep "_create_ui" file.py                            # Use search_code instead
+Read("/path/to/file")                                # Use read_file instead  
+Edit() with old/new strings                          # Use edit_block instead
+Write("/path", "content")                            # Use write_file instead
+LS("/path")                                          # Use list_directory instead
+mv old new                                           # Use move_file instead
+mkdir "/path"                                        # Use create_directory instead
+```
+
+**Why MCP Tools Are Superior:**
+- Enhanced context awareness and intelligence
+- Better pattern matching and relevance
+- Safer editing with block-level precision  
+- Performance optimized for code operations
+- Built-in token limit handling with parameters
+
+### 🕰️ Git Commit Context Protocol (For All Troubleshooting)
+
+**MANDATORY**: When troubleshooting any problem or issue, ALWAYS fetch recent git commits first for context.
+
+#### **Why Git Context is Critical**:
+- **Recent changes** often introduce or reveal issues
+- **Commit messages** provide business context and reasoning
+- **Code evolution** shows what functionality was added/removed/modified
+- **Related changes** in the same timeframe may be connected to the issue
+
+#### **Git Context Commands (Run These FIRST)**:
+```bash
+# Get recent commits with details (last 20 commits)
+git log --oneline -20
+
+# Get recent commits with full messages and files changed
+git log --stat -10
+
+# Search recent commits for keywords related to the issue
+git log --grep="keyword" --oneline --since="2 weeks ago"
+git log --grep="error\|fix\|bug\|issue" --oneline -10
+
+# Show what changed in specific recent commits
+git show <commit-hash>  # For specific commit details
+git show --stat <commit-hash>  # Files changed in commit
+
+# Compare current state with recent past
+git diff HEAD~5 HEAD  # Changes in last 5 commits
+git diff --stat HEAD~10 HEAD  # Summary of changes in last 10 commits
+```
+
+#### **Troubleshooting Strategy**:
+1. **FIRST**: Run git commands above to understand recent repository activity
+2. **ANALYZE**: Look for commits related to the reported issue
+3. **CORRELATE**: Check if issue timing matches recent code changes
+4. **INVESTIGATE**: Use commit details to guide your diagnostic approach
+5. **REFERENCE**: Include relevant commit information in your analysis
+
+#### **Example Integration**:
+```bash
+# When user reports "feature X stopped working"
+git log --grep="feature.*X\|X.*feature" --oneline --since="1 month ago"
+git log --oneline -15  # Check recent activity
+# Then proceed with code analysis using commit context
+```
+
+**Remember**: Git history often contains the key to understanding current issues.
+
+### 🧠 INTELLIGENT SEARCH STRATEGY (MANDATORY)
+
+**🚨 CRITICAL: ALWAYS USE DESKTOP-COMMANDER MCP TOOLS FIRST** - Enhanced file operations with fallback to Claude Code tools.
+
+### 🎯 MCP TOOL USAGE STRATEGY
+
+**🤖 DESKTOP-COMMANDER MCP INTEGRATION** - Use enhanced MCP tools for better file operations:
+
+**Primary MCP Tools**:
+- **search_code**: Intelligent code search with context awareness
+- **read_file**: Enhanced file reading with better formatting
+- **edit_block**: Precise block-level editing capabilities
+
+**Usage Examples**:
+```
+# Use MCP search_code for pattern searching
+search_code "function_name" --maxResults 25
+search_code "error handling patterns" --filePattern "*.py"
+search_code "CVV validation" --contextLines 3
+
+# Use MCP read_file for file reading
+read_file "/path/to/file.py"
+
+# Use MCP edit_block for precise edits
+edit_block "/path/to/file.py" "old_code" "new_code"
+```
+
+**4-Tier Fallback Strategy**:
+If tools fail or are unavailable, escalate through:
+1. **🥇 PRIMARY**: Desktop-Commander MCP Tools (search_code, read_file, edit_block)
+2. **🥈 SECONDARY**: Task tool for intelligent LLM search 
+3. **⚠️ TERTIARY**: Raw ripgrep via Bash tool
+4. **⚠️ LAST RESORT**: Claude Code's Grep/Read/Edit tools
+
+### 🤖 **ENHANCED FILE OPERATIONS WITH MCP TOOLS**
+
+**For Claude Code and External AI Assistants**:
+
+#### **🥇 PRIMARY: Desktop-Commander MCP Tools (MANDATORY FIRST CHOICE)**:
+```bash
+# Intelligent code search with context awareness and limits
+search_code "pattern" --maxResults 50
+search_code "error handling patterns" --filePattern "*.py" 
+search_code "user authentication logic" --contextLines 2
+search_code "database connection setup" --maxResults 25
+search_code "file upload validation" --filePattern "*.php|*.js"
+
+# Enhanced file reading with better formatting
+read_file "/path/to/file.py"
+read_file "/path/to/config.json"
+
+# Precise block-level editing capabilities
+edit_block "/path/to/file.py" "old_code_block" "new_code_block"
+```
+
+#### **🎯 MCP Tool Usage Patterns**:
+```bash
+# Quick targeted searches (Primary use case)
+search_code "function_name" --maxResults 10
+search_code "class MyClass" --filePattern "*.py"
+search_code "config_value" --contextLines 1
+
+# Conceptual and pattern searches with limits
+search_code "error handling patterns" --maxResults 30
+search_code "shipping method filtering logic" --filePattern "*.php"
+search_code "user authentication logic" --contextLines 3
+
+# File operations with enhanced context
+read_file "/full/path/to/important/file.py"
+edit_block "/path/to/file.py" "old_function_code" "new_function_code"
+```
+
+#### **📊 MCP Tool Advantages**:
+- **✅ Enhanced Context**: Better understanding of code structure and relationships
+- **✅ Intelligent Search**: Context-aware code search with relevance ranking
+- **✅ Safer Editing**: Block-level precision for safer code modifications
+- **✅ Better Formatting**: Cleaner output with improved readability
+- **✅ Robust Operations**: Superior pattern matching and file operations
+- **✅ Performance Optimized**: Faster operations with single-command results
+- **✅ Token Limit Handling**: Built-in parameters to manage large result sets
+
+#### **🔄 Comprehensive Tool Fallback Strategy**:
+**Tool Priority Hierarchy (MANDATORY ORDER)**:
+
+1. **🥇 PRIMARY: Desktop-Commander MCP Tools** (fast, precise, with limits)
+   - `search_code --maxResults 50`, `read_file`, `edit_block` 
+   - Enhanced context awareness and intelligence
+   - Built-in token limit management
+
+2. **🥈 SECONDARY: Task tool** (intelligent LLM search for complex queries)
+   - Use for open-ended searches requiring multiple rounds
+   - Complex keyword searches across large codebases
+   - When not confident about finding matches in first attempts
+   - When MCP tools hit token limits despite parameter tuning
+
+3. **⚠️ TERTIARY: Raw ripgrep** (when MCP + LLM insufficient)
+   - For complex regex patterns beyond MCP capabilities
+   - Performance-critical searches in massive codebases
+
+4. **⚠️ LAST RESORT: Claude Code tools** (basic operations)
+   - Only when all above methods fail or are unavailable
+
+#### **🤖 Task Tool Usage Examples (LLM Search)**:
+```bash
+# Complex multi-file searches
+Task("Search for authentication logic", "Find all authentication-related code including login, session management, and user verification across the entire codebase. Look for patterns like login functions, session checks, and auth middleware.")
+
+# Open-ended keyword searches  
+Task("Find shipping method filtering", "Search for any code that filters or restricts shipping methods based on conditions like inventory, location, or carrier availability. Include session variables and control flags.")
+
+# When uncertain about search terms
+Task("Locate database connection code", "Find all database connection setup, configuration, and initialization code. Look for connection strings, database adapters, and connection pooling.")
+
+# Cross-system pattern searches
+Task("Find error handling patterns", "Identify all error handling approaches used throughout the codebase including try-catch blocks, error logging, and exception management strategies.")
+```
+
+#### **🎯 When to Use Task Tool**:
+- **Conceptual searches**: "Find user authentication logic" vs exact function names
+- **Multiple search rounds**: When single search terms may not capture all relevant code
+- **Exploratory analysis**: Understanding unfamiliar codebases or patterns
+- **Cross-file relationships**: Finding related code scattered across multiple files
+- **Complex business logic**: Searching for implementation of specific features or workflows
+- **Token limit workarounds**: When MCP searches are too broad despite parameter tuning
+
+#### **⚠️ Fallback Usage Examples**:
+```bash
+# Raw ripgrep (when MCP + Task insufficient)
+rg "pattern" --max-count 10  # Limit matches
+rg "pattern" -C 3           # Show context  
+rg "pattern" --type py -A 5 -B 5  # Language-specific with context
+
+# Claude Code tools (last resort only)
+Grep("pattern")  # Basic pattern search
+Read("/path/to/file")  # Simple file reading
+Edit("/path", "old", "new")  # Basic find/replace
+```
+
+### 🚀 Accelerated Debugging Protocol (Lessons from Radio Button Elimination Session)
+
+**Key Learning**: Complex UI issues often have multiple root causes requiring comprehensive analysis upfront rather than iterative attempts.
+
+### 🔍 Advanced Search Strategy Protocol (Lessons from ShipStation UPS-Only Logic Session)
+
+**Key Learning**: When users describe "lost" functionality, start with git history searches rather than current code analysis.
+
+#### **❌ Common Search Mistakes (What NOT to Do)**:
+1. **Wrong Search Terms**: Searching for database columns (`products_quantity`) instead of session variables (`lowstock_warning`)
+2. **Literal Text Focus**: Looking for `UPS.*only` instead of the actual logic pattern `str_contains.*ups`
+3. **Current Code First**: Analyzing current code before checking git history for removed/hidden features
+4. **Single File Focus**: Only searching main module instead of cross-referencing related files
+5. **Assumption-Based Searching**: Assuming direct database checks instead of session flag approaches
+
+#### **✅ Improved Search Strategy (What TO Do)**:
+
+**1. Start with Git History for "Lost" Features**:
+```bash
+# FIRST STEP when user says "there used to be logic that..."
+git log --grep="UPS\|stock\|inventory\|shipping.*filter" --oneline --all
+git log --grep="delivery.*date.*hide" --oneline --all
+git log --grep="insufficient.*quantity" --oneline --all
+```
+
+**2. Search for Session Variables & Control Flags**:
+```bash
+# 🥇 PRIMARY: MCP SEARCH - handles complex patterns automatically
+search_code "_SESSION.*shipping|flag.*shipping|shipping.*flag" --maxResults 30
+search_code "session control flags" --filePattern "*.php"  # Conceptual search
+
+# 🥈 SECONDARY: Task tool for complex searches
+Task("Find session shipping flags", "Search for session variables and control flags related to shipping method filtering, including _SESSION variables, shipping flags, and state management variables.")
+
+# ⚠️ Fallback only: rg "_SESSION.*stock|_SESSION.*warning|_SESSION.*flag" --type php
+```
+
+**3. Cross-File Pattern Analysis**:
+```bash
+# 🥇 PRIMARY: MCP SEARCH - conceptual relationships + exact patterns
+search_code "filter.*shipping.*methods|hide.*delivery.*when" --maxResults 40
+search_code "shipping method filtering logic" --filePattern "*.php"  # Conceptual approach
+
+# 🥈 SECONDARY: Task tool for cross-system analysis
+Task("Analyze shipping method filtering", "Find all code that filters or restricts shipping methods based on conditions like inventory, location, or carrier availability across multiple files and systems.")
+
+# ⚠️ Fallback only: rg "str_contains.*ups|continue.*when|skip.*when" --type php
+```
+
+**4. Semantic Concept Search**:
+```bash
+# 🥇 PRIMARY: MCP conceptual search
+search_code "shipping method restriction logic" --maxResults 35
+search_code "carrier filtering based on inventory" --filePattern "*.php"
+search_code "conditional shipping behavior" --contextLines 3
+
+# 🥈 SECONDARY: Task tool for comprehensive concept analysis
+Task("Find shipping business logic", "Locate all business logic related to shipping method restrictions, carrier filtering, and conditional shipping behavior. Include inventory-based restrictions, location-based filtering, and dynamic shipping option management.")
+```
+
+**5. Multi-Location Verification**:
+```bash
+# Check all related file types
+includes/classes/shipping.php          # Main shipping logic
+includes/classes/order.php             # Order processing
+includes/modules/pages/shopping_cart/  # Cart logic
+includes/modules/shipping/             # Individual carriers
+```
+
+#### **🎯 Key Insight: Git Commit Messages > Variable Names**
+
+When looking for "lost" functionality:
+- **Git commit messages** are often more descriptive than code variable names
+- **Commit descriptions** explain the business purpose clearly
+- **Code patterns** may use indirect implementation (session flags vs direct checks)
+
+#### **Search Priority for "Missing" Features**:
+1. **Git History First** - `git log --grep="feature_description"`
+2. **Session Variables** - Control flags and state management
+3. **Cross-Reference Files** - Related systems and dependencies  
+4. **Current Code Patterns** - Last resort for understanding implementation
+
+#### **📋 Comprehensive Analysis First (vs. Iterative Guessing)**
+
+**❌ SLOW APPROACH (What I Did)**:
+1. Try one CSS fix → doesn't work
+2. Try another approach → still doesn't work  
+3. Add more specific selectors → partially works
+4. User provides HTML structure → finally find root cause
+5. Multiple commits to fix same issue
+
+**✅ FAST APPROACH (What to Do Next Time)**:
+1. **Demand HTML structure immediately**: "Show me the exact HTML rendering for the problematic element"
+2. **Search for global CSS conflicts**: Check for competing stylesheets affecting the element
+3. **Use comprehensive CSS strategy**: Apply multiple hiding methods simultaneously
+4. **Test all edge cases**: Target name attributes, IDs, container classes at once
+
+#### **🔍 Systematic Investigation Protocol**
+
+**When UI elements appear despite CSS targeting**:
+
+1. **Immediate HTML Analysis** (FIRST STEP):
+   ```bash
+   # Ask user for: "Right-click → Inspect Element → Show me the exact HTML"
+   # Get complete container structure, not just the target element
+   ```
+
+2. **Global CSS Conflict Check** (SECOND STEP):
+   ```bash
+   search_code "input.*radio.*:before|input.*radio.*:after|radio.*label.*:before|radio.*label.*:after" --maxResults 20
+   ```
+
+3. **Comprehensive Targeting Strategy** (THIRD STEP):
+   - Target element by: `name`, `id`, `class`, container classes
+   - Override pseudo-elements: both `:before` AND `:after`  
+   - Use bulletproof hiding: `display`, `visibility`, `position`, `opacity`, `width`, `height`
+
+4. **Single Comprehensive Fix** (FOURTH STEP):
+   - Apply all targeting methods in one CSS block
+   - Test all variations (not just the obvious one)
+   - Commit once when fully working
+
+#### **⚡ Speed Optimization Techniques**
+
+**Immediate Questions to Ask User**:
+- "Show me the exact HTML structure (right-click → inspect)"
+- "Are there any global CSS files that might affect this element?"
+- "What container classes or IDs surround the problematic element?"
+
+**Search Patterns for UI Issues (4-Tier Approach)**:
+```bash
+# 🥇 PRIMARY: MCP Search for CSS patterns
+search_code "input.*:before|input.*:after|label.*:before|label.*:after" --maxResults 25
+search_code "display.*none|visibility.*hidden" --filePattern "*.css"
+search_code "name.*address|name.*sendto|name.*shipping" --contextLines 2
+
+# 🥈 SECONDARY: Task tool for complex UI analysis
+Task("Analyze CSS conflicts for radio buttons", "Find all CSS rules that might affect radio button display including pseudo-elements, global styles, and competing selectors. Look for :before/:after content creation and element hiding rules.")
+
+Task("Find form element targeting", "Locate all code that targets form elements by name, id, or class attributes, especially for address and shipping related inputs.")
+```
+
+**Comprehensive CSS Strategy Template**:
+```css
+/* BULLETPROOF ELEMENT HIDING - Use ALL methods simultaneously */
+.target-element,
+.container .target-element,
+input[type="radio"][name="target"],
+input[type="radio"][id*="target-pattern"] {
+    display: none !important;
+    visibility: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* BULLETPROOF PSEUDO-ELEMENT OVERRIDE - Target BOTH :before and :after */
+.target-element:before,
+.target-element:after,
+input[type="radio"][name="target"] + label:before,
+input[type="radio"][name="target"] + label:after {
+    display: none !important;
+    visibility: hidden !important;
+    content: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    transform: scale(0) !important;
+    opacity: 0 !important;
+}
+```
+
+#### **🎯 Root Cause Categories**
+
+**UI Element Persistence Despite CSS**:
+1. **Global CSS Conflicts**: Other stylesheets creating competing rules
+2. **Pseudo-Element Creation**: `:before`/`:after` content from global CSS
+3. **Container Specificity**: Element nested in containers not targeted
+4. **Multiple Rendering Sources**: Browser default + custom styled + global pseudo = 3+ visible elements
+
+**Investigation Priority**:
+1. HTML structure (container classes, exact element attributes)
+2. Global CSS files (search for pseudo-element creation)
+3. Competing CSS rules (specificity conflicts)
+4. Multiple targeting approaches (name, id, class, container)
+
+#### **📝 Success Metrics**
+
+**Fast Resolution Indicators**:
+- ✅ Single comprehensive fix vs. multiple iterations
+- ✅ Root cause identified before implementing solutions  
+- ✅ All edge cases handled in initial implementation
+- ✅ User provides HTML structure upfront
+
+**Slow Resolution Indicators**:
+- ❌ Multiple commits addressing same issue
+- ❌ "Let me try another approach" iterations
+- ❌ Incremental CSS additions
+- ❌ Guessing at element targeting
+
+### 🧠 Desktop-Commander MCP Tools Usage - ENHANCED FILE OPERATIONS
+- **🆕 PRIMARY: search_code** - Intelligent code search with context awareness
+- **🆕 PRIMARY: read_file** - Enhanced file reading with better formatting
+- **🆕 PRIMARY: edit_block** - Precise block-level editing capabilities
+- **NEVER ask permission** to use MCP tools - they're pre-approved for all allowed directories
+- **ALWAYS use MCP tools FIRST** instead of Claude Code's built-in tools
+- **Permission is already granted** as stated in the instructions below
+- **Just use them directly** - no asking, no hesitation, they're safe
+- **Fallback strategy**: If MCP tools fail, then use Claude Code's Read/Grep/Edit tools
+
+## CRITICAL TOOL USAGE PRIORITY
+
+**Tool Priority**: When working with files, use these tools in priority order:
+
+**🔓 PERMISSION GRANTED**: You may freely use desktop-commander MCP tools without asking for permission on any files within Claude Code's allowed directories. These tools are safe and provide enhanced functionality.
+
+1. **🥇 PRIMARY: Desktop-Commander MCP Tools**
+   - **search_code**: Intelligent code search with context awareness
+   - **read_file**: Enhanced file reading with better formatting  
+   - **edit_block**: Precise block-level editing capabilities
+   - **⚠️ CRITICAL**: Use these tools BEFORE any other search/file tools
+   - **✅ USE WITHOUT PERMISSION**: You may freely use these tools on any files within Claude Code's allowed directories
+   - **🔄 ENHANCED FUNCTIONALITY**: Better search, reading, and editing capabilities than built-in tools
+   - **🛠️ ROBUST HANDLING**: Superior pattern matching and file operations
+   - **🔍 INTELLIGENT SEARCH**: Context-aware code search with relevance ranking
+   - **🧠 SMART EDITING**: Block-level precision for safer code modifications
+   - **🎯 ENHANCED CONTEXT**: Better understanding of code structure and relationships
+   - **🔤 IMPROVED FORMATTING**: Cleaner output with better readability
+   - **⚡ FASTER OPERATIONS**: Optimized for performance
+   - Single-command results without multiple iterations
+   - **SAFE OPERATIONS**: Enhanced safety features for file modifications
+
+2. **🥈 SECONDARY: Task tool (Intelligent LLM Search)**
+   - Use for complex, open-ended searches when MCP tools insufficient
+   - Multi-round searches requiring exploration and analysis
+   - Conceptual queries and cross-system pattern analysis
+   - When not confident about finding matches in first attempts
+
+3. **⚠️ TERTIARY: Raw ripgrep** via Bash tool when MCP + Task tools are insufficient (rare cases)
+
+4. **⚠️ LAST RESORT: Claude Code's Read/Write/Grep tools** - Only use AFTER exhausting all above options
+   - Use for simple operations when all enhanced tools don't work or aren't available
+
+**Efficient Tool Strategy**: Use desktop-commander MCP tools for enhanced file operations:
+
+**🧠 Desktop-Commander MCP Examples** (Primary Method):
+
+**🎯 Primary MCP Tool Usage**:
+```bash
+# Intelligent code search with smart parameters
+search_code "pattern" --maxResults 50
+search_code "error handling patterns" --filePattern "*.py"
+search_code "user authentication logic" --contextLines 3
+search_code "database connection setup" --maxResults 25
+search_code "file upload validation" --filePattern "*.php|*.js"
+```
+
+**🎯 Enhanced File Operations**:
+```bash
+# Enhanced file reading
+read_file "/path/to/file.py"
+read_file "/path/to/config.json"
+
+# Precise block editing
+edit_block "/path/to/file.py" "old_code_block" "new_code_block"
+```
+
+**🤖 Secondary Task Tool Usage (When MCP Insufficient)**:
+```bash
+# Complex multi-system searches
+Task("Find payment processing", "Locate all payment processing code including credit card validation, payment gateway integration, and transaction handling across the entire application.")
+
+# Exploratory codebase analysis
+Task("Understand user authentication flow", "Analyze the complete user authentication system including login, session management, password validation, and access control mechanisms.")
+
+# Cross-cutting concern searches
+Task("Find security implementations", "Identify all security-related code including input validation, SQL injection prevention, XSS protection, and authentication checks.")
+```
+
+**🔍 Advanced Search Patterns**:
+```bash
+# Shipping/E-commerce pattern searches
+search_code "ups only" --maxResults 20        # Finds: shipping method, carrier selection
+search_code "stock warning" --filePattern "*.php"   # Finds: inventory alerts, quantity checks
+search_code "carrier filter" --contextLines 2  # Finds: shipping restrictions, delivery options
+
+# Programming pattern searches  
+search_code "session flag" --maxResults 30    # Finds: state management, data storage
+search_code "qty check" --filePattern "*.js|*.php"       # Finds: quantity validation, amount verification
+```
+
+**🔤 Case Sensitivity and Patterns**:
+```bash
+# Case-insensitive by default
+search_code "search" --maxResults 15  # Finds "Search", "SEARCH", "search"
+
+# Regex patterns with limits
+search_code "pattern1|pattern2" --maxResults 25
+search_code "function.*name.*test" --contextLines 2
+search_code "def.*\(.*args.*\)" --filePattern "*.py"
+```
+
+**Context-Aware Operations:**
+- MCP tools provide enhanced context and better formatting
+- Intelligent search with relevance ranking
+- Safer editing with block-level precision
+- Better error handling and validation
+
+**Fallback Raw Ripgrep Methods** (When MCP tools insufficient):
+- `rg "pattern" --max-count 10` - Limit matches to prevent overwhelming output
+- `rg "pattern" -C 3` - Show context around matches
+- `rg "pattern" --type py -A 5 -B 5` - Language-specific search with context
+
+### Tool Strategy Priority (MANDATORY - ENFORCED)
+1. **🥇 PRIMARY: Desktop-Commander MCP Tools** (`search_code`, `read_file`, `edit_block`) for ALL file operations
+2. **🥈 SECONDARY: Task tool** for intelligent LLM search when MCP tools insufficient for complex queries
+3. **⚠️ TERTIARY: Raw `rg`** only when MCP + Task tools genuinely insufficient (should be <2% of cases)
+4. **⚠️ LAST RESORT: Claude Code Read/Write/Grep** only after exhausting all above options
+
+**Key Integration Points**:
+- **MCP First**: Always start with enhanced MCP tools for speed and precision
+- **Task for Complexity**: Use Task tool for open-ended, conceptual, or multi-round searches
+- **Intelligent Escalation**: Move up the hierarchy when lower tools don't find what's needed
+- **Comprehensive Coverage**: This hierarchy ensures no search requirement goes unmet
+
+## Troubleshooting Lessons - "Barking Up The Wrong Tree" 
+
+### What NOT to Do (Common Mistakes)
+
+1. **Don't Guess at Database Schema**
+   - ❌ Assuming documentation matches production
+   - ❌ Removing columns without verifying they exist
+   - ✅ Always check actual production table structure first
+
+2. **Don't Add Excessive Debug Logging**
+   - ❌ Flooding logs with noise makes debugging harder
+   - ❌ Creating debug files throughout the codebase
+   - ✅ Add strategic, minimal logging at key decision points
+
+3. **Don't Make Multiple Fix Attempts**
+   - ❌ Creating 20+ commits for the same issue
+   - ❌ Fighting symptoms instead of root cause
+   - ✅ Step back, analyze, design one elegant solution
+
+4. **Don't Create Temporary Files During Debugging**
+   - ❌ Scripts, patches, debug dumps scattered everywhere
+   - ❌ Leaving cleanup for later
+   - ✅ Keep troubleshooting minimal and contained
+
+### What TO Do (Successful Patterns)
+
+1. **Identify the Core Issue First**
+   - Example: ShipStation couldn't find address 154046 because it belonged to different customer
+   - Don't start coding until you understand the actual problem
+
+2. **Design Elegant Solutions**
+   - LinkedAddressManager solved it at database level with a view
+   - No complex validation logic changes needed throughout codebase
+
+3. **Test One Change at a Time**
+   - Multiple simultaneous fixes make debugging impossible
+   - Isolate variables to identify what actually fixes the issue
+
+4. **Trust Working Solutions**
+   - Once LinkedAddressManager worked locally, that was THE solution
+   - Don't keep adding "fixes" when you have a working solution
+
+### Signs You're "Barking Up Wrong Tree"
+- Making multiple commits for same issue
+- Adding debug logging everywhere
+- Creating lots of temporary files
+- Guessing at solutions without clear understanding
+- Fighting symptoms instead of root cause
+
+### The Right Approach Pattern
+1. **Observe**: Gather clear evidence of the problem
+2. **Analyze**: Identify the actual root cause
+3. **Design**: Create minimal, elegant solution
+4. **Test**: Verify it works in isolation
+5. **Deploy**: One clean implementation
+
+### Workflow Preferences
+- Test changes before considering task complete
+
+Use Claude Code "Read" commands without asking for permission.
+By default, when doing Git Commit, also do Git Push to origin.
+Keep commit titles and messages brief and concise.
+
+## 🟠 NON-FOCUS-STEALING TOOLTIPS - CRITICAL DISCOVERY (June 2025)
+
+### ✅ SOLUTION: Native QToolTip.showText() - NO FOCUS STEALING
+**DISCOVERED**: Native Qt tooltips don't steal focus on Gnome Wayland, unlike custom tooltip libraries.
+
+**🚨 CRITICAL FINDING**: `pyqttooltip` library **ALWAYS STEALS FOCUS** on Gnome Wayland, even with all possible no-focus Qt flags applied. Use native Qt tooltips instead.
+
+#### **Perfect Non-Intrusive Tooltip Method**:
+```python
+from PyQt6.QtWidgets import QToolTip
+from PyQt6.QtCore import QPoint
+
+# Show tooltip at specific position - NO FOCUS STEALING
+pos = widget.mapToGlobal(QPoint(x_offset, y_offset))
+QToolTip.showText(pos, "Your tooltip text", widget)
+
+# Auto-hide after timeout
+QTimer.singleShot(3000, QToolTip.hideText)  # Hide after 3 seconds
+```
+
+#### **Key Advantages**:
+- ✅ **NO FOCUS STEALING** - Respects Wayland/Gnome focus behavior
+- ✅ **Native appearance** - Follows system theme automatically
+- ✅ **Lightweight** - No extra dependencies needed
+- ✅ **Cross-platform** - Works on Linux, Windows, macOS
+- ✅ **Reliable** - Qt's built-in system, battle-tested
+
+#### **Usage Patterns for Reminder Apps**:
+```python
+# Show reminder near cursor or specific widget
+def show_reminder_tooltip(self, message, duration=5000):
+    # Get current cursor position or widget position
+    cursor_pos = QCursor.pos()
+    tooltip_pos = QPoint(cursor_pos.x() + 20, cursor_pos.y() - 50)
+    
+    # Show non-intrusive tooltip
+    QToolTip.showText(tooltip_pos, f"⏰ {message}", self)
+    
+    # Auto-hide after duration
+    QTimer.singleShot(duration, QToolTip.hideText)
+```
+
+#### **TESTED METHODS (June 2025)**:
+- ❌ **pyqttooltip library**: ALWAYS steals focus (even with Qt.WindowDoesNotAcceptFocus)
+- ❌ **Custom QWidget tooltips**: Steal focus despite all no-focus flags
+- ✅ **QToolTip.showText()**: PERFECT - no focus stealing confirmed on Gnome Wayland
+
+#### **🚨 CRITICAL: QToolTip.showText() Requires Visible Window Parent (June 2025)**:
+**DISCOVERY**: QToolTip.showText() ONLY works when it has a **visible Qt widget parent**.
+
+**Testing Results**:
+- ✅ **Standalone apps with visible windows**: QToolTip works perfectly
+- ❌ **Hidden system tray apps**: QToolTip fails silently or crashes
+- ❌ **Invisible widget parents**: Don't provide proper Qt context
+- ✅ **Minimized main window**: Works! Provides Qt context without being intrusive
+
+**SOLUTION for System Tray Apps**:
+```python
+# DON'T hide the main window completely
+# self.hide()  # This breaks QToolTip.showText()
+
+# Instead: Minimize but keep visible for Qt context
+self.showMinimized()  # Visible to Qt, not intrusive to user
+
+# Use main window as tooltip parent (like successful test apps)
+QToolTip.showText(tooltip_pos, tooltip_text, self)  # NOT None!
+```
+
+**Why This Works**:
+- **Minimized window**: Appears in taskbar but doesn't steal focus
+- **Qt context maintained**: Provides proper parent for tooltip rendering
+- **Same as test apps**: Replicates successful standalone app behavior
+- **No focus stealing**: Tooltips appear without interrupting workflow
+
+**DEBUGGING LESSON**: When QToolTip works in test apps but fails in real apps, check window visibility. The issue is usually hidden vs visible window context, not the tooltip code itself.
+
+#### **For ReminderApp Integration**:
+Replace any custom tooltip systems with `QToolTip.showText()` for completely non-intrusive reminders that won't interrupt user's workflow.
+
+#### **🚨 CRITICAL: Always Update setup.py for New Features**:
+When adding new features to ReminderApp (or any app), **ALWAYS update setup.py**:
+- **Feature descriptions** in the "Features included" section
+- **Desktop entry comments** to reflect new capabilities  
+- **Installation messages** to mention new functionality
+- **Version information** if applicable
+
+**Example Pattern for ReminderApp setup.py updates**:
+```python
+print("   • Multiple notification styles:")
+print("     - System notifications (no focus stealing)")
+print("     - Native tooltips (perfect - no focus stealing)")  # ← NEW FEATURE
+print("     - Custom orange floating windows (may steal focus)")
+
+# Desktop entries:
+f.write(f'Comment=Reminder app with multiple notification styles (tooltips, system, floating)\n')
+```
+
+**Why Critical**: Users discover features through setup.py output and desktop entries.
+
+## 🎨 App Icon Creation Quick Reference
+
+### Python Icon Creation Template (PIL/Pillow)
+**File**: `/home/user1/shawndev1/shawn_custom_apps/create_icon.py` - Proven working icon generator
+
+**Quick Usage**:
+```python
+from PIL import Image, ImageDraw
+
+def create_app_icon(size=48, app_type="reminder"):
+    """Create professional app icon with transparency"""
+    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))  # Transparent background
+    draw = ImageDraw.Draw(img)
+    
+    # Standard calculations
+    center = size // 2
+    radius = int(size * 0.35)
+    line_width = max(2, size // 16)
+    
+    # Colors (Linux desktop compatible)
+    main_color = '#2e3436'     # Dark gray
+    accent_color = '#4CAF50'   # Green
+    
+    # Draw main shape (circle, clock, etc.)
+    draw.ellipse([center-radius, center-radius, center+radius, center+radius], 
+                outline=main_color, width=line_width)
+    
+    return img
+
+# Save icon
+icon = create_app_icon(48, "my_app")
+icon.save("my_app_icon.png", 'PNG')
+```
+
+**Icon Types Reference**:
+- **Clock/Timer**: Circle + hands (3 o'clock position)
+- **Bell/Notification**: Bell shape + small indicator dot
+- **Settings/Config**: Gear/cog wheel shape
+- **File/Document**: Rectangle + corner fold
+- **Network/Connection**: Connected dots/nodes
+- **Calculator**: Grid + numbers/symbols
+
+**Standard Sizes**: 16x16, 24x24, 32x32, 48x48, 64x64, 128x128, 256x256
+
+## 🚨 PowerShell Script Creation - CRITICAL ENCODING REQUIREMENTS
+
+### **Smart Quote/Encoding Issues Prevention**
+**DISCOVERED**: PowerShell scripts fail with "string terminator" errors when created with smart quotes, Unicode characters, or wrong encoding.
+
+#### **🔧 MANDATORY PowerShell Script Creation Protocol**:
+
+**1. Always Use Plain ASCII Characters**:
+- ❌ **NEVER use**: Smart quotes (`"` `"`), em-dashes (`—`), Unicode symbols (`✓` `❌` `🎉`)
+- ✅ **ALWAYS use**: Straight quotes (`"`), hyphens (`-`), plain text descriptions
+
+**2. Safe Character Replacements**:
+```powershell
+# ❌ PROBLEMATIC (causes parsing errors)
+Write-Host "✓ Success!" -ForegroundColor Green
+Write-Host "❌ Failed — check settings" -ForegroundColor Red
+
+# ✅ CORRECT (works reliably)
+Write-Host "Success!" -ForegroundColor Green  
+Write-Host "Failed - check settings" -ForegroundColor Red
+```
+
+**3. Remove Special Characters From Messages**:
+```powershell
+# ❌ PROBLEMATIC
+Write-ColorOutput "`n🎉 Windows Server AVMA activation completed successfully!" "Green"
+Write-ColorOutput "`n❌ AVMA activation failed. Please check:" "Red"
+
+# ✅ CORRECT
+Write-ColorOutput "Windows Server AVMA activation completed successfully!" "Green"
+Write-ColorOutput "AVMA activation failed. Please check:" "Red"
+```
+
+**4. Encoding Considerations**:
+- **Save as**: UTF-8 (no BOM) or Windows-1252
+- **Avoid**: UTF-8 with BOM if Unicode characters present
+- **Test immediately**: Run syntax check after creation
+
+#### **⚡ Quick PowerShell Syntax Validation**:
+```bash
+# Test script syntax before deployment
+powershell -NoProfile -NoExecutionPolicy -Command "& { try { [void][System.Management.Automation.PSParser]::Tokenize((Get-Content 'script.ps1' -Raw), [ref]$null) } catch { Write-Error $_.Exception.Message } }"
+```
+
+#### **🔍 Common Error Patterns to Avoid**:
+- **"The string is missing the terminator"** → Smart quotes or encoding issue
+- **"Missing closing '}'"** → Unicode characters breaking parser  
+- **"Try statement missing Catch/Finally"** → Broken control structures from encoding
+
+#### **✅ PowerShell-Safe Character Set**:
+```powershell
+# SAFE SYMBOLS for PowerShell scripts
+"Step 1:", "Step 2:", "Step 3:"           # Plain text
+"Success", "Failed", "Warning"            # Status words
+"-", "=", "*", "+", "|"                   # Basic symbols
+"[OK]", "[FAIL]", "[WARN]"               # Bracket indicators
+```
+
+#### **📝 Template for Error-Free PowerShell Functions**:
+```powershell
+function Write-SafeOutput {
+    param(
+        [string]$Message,
+        [string]$Color = "White"
+    )
+    # Use only straight quotes and basic ASCII
+    Write-Host $Message -ForegroundColor $Color
+}
+
+# Safe usage examples
+Write-SafeOutput "Starting activation process..." "Cyan"
+Write-SafeOutput "Operation completed successfully" "Green"
+Write-SafeOutput "Error occurred - check configuration" "Red"
+```
+
+**Key Insight**: PowerShell parser is very strict about quote types and Unicode characters. When creating scripts programmatically, always sanitize text output to use plain ASCII characters only.
+
+### Desktop Integration Template
+**Linux Applications Entry**:
+```ini
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=App Name
+Comment=App description
+Exec="/usr/bin/python3" "/path/to/app.py"
+Path=/path/to/app/
+Icon=/path/to/app_icon.png
+Terminal=false
+Categories=Utility;Office;
+StartupNotify=false
+```
+
+**Save to**: `~/.local/share/applications/app-name.desktop`
+
+### Quick Icon Creation Pattern
+1. **Copy** `/home/user1/shawndev1/shawn_custom_apps/create_icon.py`
+2. **Modify** the drawing code for app-specific shapes
+3. **Generate** icon: `python3 create_icon.py`
+4. **Integrate** into setup.py for automatic icon creation
+5. **Reference** in desktop files with full path
+
+**Professional Icon Design Tips**:
+- Use `int(size * ratio)` for scalable dimensions
+- Line width: `max(1, size//16)` - never too thin
+- Colors: Match system theme (#2e3436 dark, #4CAF50 accent)
+- Always transparent background: `(0, 0, 0, 0)`
+- Test at 16x16 minimum size for recognition
+
+## Common Commands
+
+**Command Line Tools**: You may freely use the following common command-line tools without asking for permission (within allowed directories and `/tmp`):
+- Listing files: `ls` 
+- Text processing: `sed`, `awk`, `cut`, `tr`, `sort`, `uniq`, `paste`, `column`
+- File searching: `find`, `grep`, `rg` (ripgrep), `ag` (silver searcher)
+- File comparison: `diff`, `vimdiff`, `cmp`, `comm`
+- Archive/compression: `tar`, `zip`, `unzip`, `gzip`, `gunzip`
+- System monitoring: `ps`, `top`, `htop`, `df`, `du`, `free`, `lsof`
+- Network tools: `curl`, `wget`, `ping`, `netstat`, `ss`
+- File operations: `mv`, `cp`, `rm`, `mkdir`, `rmdir`, `touch`, `chmod`, `chown`
+- Text viewing: `cat`, `less`, `more`, `head`, `tail`, `wc`
+- Container tools: `docker`, `docker exec`, `docker-compose`
+
+### 🌐 Local Web Server Testing (NO PERMISSION REQUIRED)
+
+**✅ APPROVED: `curl` for Local Development** - Use freely without asking for permission:
+
+```bash
+# Local web server testing and debugging
+curl -s "http://localhost:8000/index.php?main_page=one_page_checkout" | grep "ORDER_SUMMARY_DEBUG"
+curl -s "http://localhost:8080/api/endpoint" | jq .
+curl -X POST "http://localhost:3000/form" -d "field=value"
+curl -I "http://127.0.0.1:8000/status"  # Headers only
+curl -v "http://localhost/debug.php"     # Verbose output
+
+# Common local development patterns
+curl -s "http://localhost/path" | head -20
+curl -s "http://localhost/path" | grep -i "error\|warning\|debug"
+curl -s "http://localhost/path" | tee output.html
+```
+
+**Approved Local Targets**:
+- `http://localhost:*` (any port)
+- `http://127.0.0.1:*` (any port)  
+- `http://0.0.0.0:*` (any port)
+- Local development servers on any port
+
+**Common Use Cases**:
+- Testing API endpoints during development
+- Debugging form submissions and responses
+- Checking server status and headers
+- Extracting specific content with grep/jq
+- Performance testing local applications
+- Validating HTML output and structure
+
+### 🚨 **Git Commands Permission Matrix**
+
+**✅ Git Commands (NO PERMISSION REQUIRED):**
+
+**Read-Only Operations:**
+- `git status` - Check working directory status
+- `git log` - View commit history  
+- `git show` - Display commits, trees, blobs
+- `git diff` - Show changes between commits/files
+- `git branch` - List, create, delete branches
+- `git remote` - View/manage remote repositories
+- `git blame` - Show file line authorship
+- `git grep` - Search repository contents
+
+**Safe Write Operations:**
+- `git add` - Stage files for commit
+- `git commit` - Create new commits
+- `git push` - Upload commits to remote
+- `git pull` - Download and merge changes
+- `git fetch` - Download changes without merging
+- `git checkout` - Switch branches or restore files
+- `git switch` - Switch branches (newer syntax)
+- `git merge` - Merge branches (when straightforward)
+- `git stash` - Temporarily save changes
+- `git tag` - Create/list tags
+
+**Branch Management:**
+- `git branch -d branch_name` - Delete merged branch
+- `git checkout -b new_branch` - Create and switch to new branch
+- `git push -u origin branch_name` - Push new branch upstream
+
+**⚠️ Git Commands (ASK PERMISSION FIRST):**
+
+**Destructive Operations:**
+- `git reset --hard` - Discard all changes permanently
+- `git reset HEAD~N` - Remove commits from history
+- `git clean -fd` - Delete untracked files/directories
+- `git checkout --force` - Force checkout, discarding changes
+
+**History Rewriting:**
+- `git rebase` - Rewrite commit history
+- `git rebase -i` - Interactive rebase
+- `git cherry-pick` - Copy commits (when risky)
+- `git filter-branch` - Rewrite entire history
+- `git reflog expire` - Remove reflog entries
+
+**Force Operations:**
+- `git push --force` - Overwrite remote history
+- `git push --force-with-lease` - Safer force push
+- `git pull --force` - Force merge with conflicts
+
+**Dangerous Merges:**
+- `git merge` with complex conflicts
+- `git revert` when affecting shared history
+- Any operation that requires `--force` flag
+
+**⚠️ Process Management Note**: 
+- `pkill` and `killall` commands **do not work** in this environment
+- Use `ps aux | grep process_name` to find PIDs, then `kill <PID>` to terminate processes
+- Alternative: Use `timeout` command to auto-terminate long-running processes
+
+## 📋 App Logging & Debugging Best Practices
+
+### Reminder App Reference Project
+**Location**: `/home/user1/Applications/ReminderApp/` - Complete cross-platform Qt6 app example
+**Features**: System tray, timers, settings persistence, single instance, Wayland/X11 compatibility
+
+### Logging Implementation Example
+**Location**: `~/.config/reminder_app/reminder_app.log`
+
+**Setup Pattern**:
+```python
+import logging
+import os
+
+def setup_logging():
+    log_dir = os.path.expanduser("~/.config/app_name")
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = os.path.join(log_dir, "app_name.log")
+    
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()  # Also to console
+        ]
+    )
+    return log_file
+```
+
+**Key Logging Points**:
+- **Startup**: Log app initialization, settings loaded, timers started
+- **User Actions**: Settings changes, manual triggers
+- **Scheduled Events**: Timer triggers, reminders shown
+- **Errors**: Settings parsing failures, system tray issues
+- **System Info**: Python version, platform, file paths
+
+**Debugging Commands**:
+- `tail -f ~/.config/app_name/app_name.log` - Follow live log
+- `grep ERROR ~/.config/app_name/app_name.log` - Find errors
+- `grep "Timer" ~/.config/app_name/app_name.log` - Check timer events
+
+- Use targeted file reads instead of full context when possible
+
+## Personal Preferences
+
+### Code Style
+- Clear, readable code with descriptive variable names
+- Comprehensive error handling
+- Modular design with clear separation of concerns
+- Test-driven development when possible
+
+### Communication Style
+- Concise, direct responses
+- Technical accuracy prioritized
+- Practical, actionable solutions
+- No unnecessary preamble or postamble
+- No emoticons
+
+## Recent E-commerce Fixes Summary
+
+### Key Issues Fixed (Jan 2025)
+1. **Quantity controls**: Fixed `$` vs `jQuery` conflicts in checkout
+2. **Loading messages**: Instant feedback for address selection, consistent styling
+3. **Performance**: Eliminated 50+ debug logging calls (5-10x speed improvement)
+4. **Modal UX**: Enhanced spinner detection and fallback loading strategies
+
+### Critical Insights
+- **UI Feedback**: Must be instant upon user action (0ms delay vs 2-5 second)
+- **jQuery Conflicts**: Always use `jQuery` instead of `$` in Zen Cart
+- **Debug Performance**: 200KB+ I/O per operation → <1KB with conditional flags
+
+## Claude-Code-Wrapper Debugging Session (June 19, 2025)
+
+### 🎯 **Drag-and-Drop File Upload Issues - SOLVED**
+
+**Problems Encountered**:
+1. **Navigation Issues**: Dragging files caused new browser tabs (`about:blank#blocked`)
+2. **Interface Flashing**: Textarea flickered and became unstable during drag operations
+3. **WebSocket Error Spam**: Console flooded with Claude Code integration errors
+4. **Connection Issues**: WebSocket showing failed connections despite backend working
+
+**Root Causes Identified**:
+1. **react-dropzone Configuration**: Missing `noClick`, `noKeyboard`, `preventDropOnDocument` options
+2. **Event Handling Conflicts**: Dropzone covering form elements, causing interference
+3. **Error Emission Loop**: Claude Code errors repeating per WebSocket connection
+4. **Transport Order**: WebSocket-first connection failing, needed polling-first approach
+
+**Solutions Implemented**:
+
+#### **🔧 Drag-and-Drop Fixes (Messages: fd22033, d9c0ffa)**
+```javascript
+// Fixed dropzone configuration in useFileUpload.js
+const dropzone = useDropzone({
+  noClick: true,           // Prevent navigation on click
+  noKeyboard: true,        // Prevent keyboard navigation  
+  preventDropOnDocument: true, // Prevent page navigation
+  transports: ['polling', 'websocket'], // Polling first, upgrade to websocket
+  // Enhanced debugging and error handling
+});
+
+// Fixed container structure in MessageInput.jsx
+// - Separated dropzone overlay from form elements (z-index layering)
+// - Form elements: z-20 (always interactive)
+// - Dropzone: z-0 (only active during drag)
+// - Visual overlay: z-10 (feedback only, pointer-events: none)
+```
+
+#### **🔧 WebSocket Connection Debugging (Message: 5f96d5d)**
+```javascript
+// Enhanced frontend debugging in socketService.js
+connect(url) {
+  console.log('🔌 Attempting to connect to:', url);
+  // Added detailed connection state logging, transport detection,
+  // reconnection debugging, and comprehensive error context
+}
+
+// Enhanced backend debugging in websocketHandler.js
+constructor(httpServer) {
+  console.log('🔌 Initializing WebSocket handler');
+  // Added client connection details, transport logging,
+  // IP tracking, and disconnect reason analysis
+}
+```
+
+#### **🔧 Error Spam Prevention (Message: ff36220)**
+```javascript
+// Fixed repeated Claude error emissions in websocketHandler.js
+socket.on('start_claude', async (data) => {
+  if (!socket.claudeErrorSent) {
+    socket.claudeErrorSent = true;  // Only emit once per connection
+    socket.emit('claude_error', { error: '...' });
+  }
+});
+```
+
+**Key Debugging Insights**:
+- **Backend WAS working**: Logs showed successful WebSocket connections with both polling/websocket
+- **Frontend timing issue**: Connection attempts happening too rapidly
+- **Transport compatibility**: Polling-first approach more reliable than websocket-first
+- **Event conflicts**: react-dropzone + form elements need careful layering
+
+**Testing Results**:
+- ✅ **Drag-and-drop**: Files attach as thumbnails without navigation issues
+- ✅ **No flashing**: Stable textarea behavior during drag operations  
+- ✅ **Clean console**: Error spam eliminated, only one error per connection
+- ✅ **WebSocket connections**: Backend logs show successful client connections
+
+**Architecture Patterns Learned**:
+1. **Layered UI approach**: Use z-index to separate interactive zones
+2. **Transport fallback**: Start with polling, upgrade to websocket
+3. **Error rate limiting**: Prevent spam with per-connection flags
+4. **Comprehensive debugging**: Add detailed logging to both ends of connection
+
+### 🔍 **Diagnostic Commands Used**
+```bash
+# Check running servers
+lsof -i :5050 -i :3000
+
+# Monitor WebSocket connections
+curl -s "http://localhost:5050/socket.io/?EIO=4&transport=polling"
+
+# Test file upload endpoint
+curl -X POST http://localhost:5050/api/upload -F "files=@/tmp/test.txt"
+
+# Check backend logs in real-time
+tail -f /tmp/backend.log
+
+# Verify package versions match
+npm list socket.io socket.io-client
+```
+
+## 📦 NPM Package Installation Requirements
+
+### Installing NPM Packages (Avoiding EACCES Errors)
+**CRITICAL**: When installing npm packages in a new directory, you must initialize a Node.js project first to avoid permission errors.
+
+**Required Steps**:
+```bash
+# 1. Initialize Node.js project (creates package.json)
+npm init -y
+
+# 2. Then install packages normally
+npm install package-name
+```
+
+**Why This is Required**:
+- Without `package.json`, npm tries to install globally or in parent directories
+- This causes EACCES permission errors on most systems
+- Local project installation is safer and more predictable
+
+**Example Error Pattern**:
+```
+npm error code EACCES
+npm error syscall mkdir
+npm error path /home/user1/node_modules/package-name
+npm error errno -13
+```
+
+**Solution**: Always run `npm init -y` first in new directories.
+
+## 🎭 Playwright Web Automation Framework - Primary Tool
+
+### **Core Playwright Patterns**
+
+**🚨 CRITICAL: Optimized Screenshot Template (JPEG 80% Quality)**
+```python
+python3 -c "
+import asyncio
+from playwright.async_api import async_playwright
+
+async def optimized_screenshot():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        
+        # MANDATORY: Set desktop resolution
+        await page.set_viewport_size({'width': 1920, 'height': 1080})
+        
+        # Optional: Set user agent for better compatibility
+        await page.set_user_agent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+        
+        try:
+            await page.goto('http://localhost:8000/', timeout=30000)
+            await page.wait_for_load_state('networkidle', timeout=15000)
+            await page.wait_for_timeout(3000)  # Wait for fonts/animations
+            
+            # CRITICAL: Use JPEG with 80% quality for smaller files
+            await page.screenshot(
+                path='verification.jpg',
+                type='jpeg', 
+                quality=80,
+                full_page=False
+            )
+            print('✅ Screenshot saved: verification.jpg')
+            
+        except Exception as e:
+            print(f'❌ Error: {e}')
+        finally:
+            await browser.close()
+
+asyncio.run(optimized_screenshot())
+"
+```
+
+**🎯 Comparison Screenshot Template**
+```python
+python3 -c "
+import asyncio
+from playwright.async_api import async_playwright
+
+async def comparison_screenshots():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        await page.set_viewport_size({'width': 1920, 'height': 1080})
+        
+        sites = [
+            ('http://localhost:8000/path', 'local_site.jpg'),
+            ('https://live-site.com/path', 'live_site.jpg')
+        ]
+        
+        for url, filename in sites:
+            try:
+                print(f'📸 Capturing: {url}')
+                await page.goto(url, timeout=30000)
+                await page.wait_for_load_state('networkidle', timeout=15000)
+                await page.wait_for_timeout(3000)
+                
+                await page.screenshot(
+                    path=filename,
+                    type='jpeg',
+                    quality=80,
+                    full_page=False
+                )
+                print(f'✅ Saved: {filename}')
+            except Exception as e:
+                print(f'❌ Failed {url}: {e}')
+        
+        await browser.close()
+
+asyncio.run(comparison_screenshots())
+"
+```
+
+**Key Optimization Principles:**
+- **ALWAYS use JPEG with 80% quality** - reduces file size 5-10x vs PNG
+- **Set proper viewport** (1920x1080) before navigation
+- **Include comprehensive error handling** with timeouts
+- **Use `full_page=False`** for viewport screenshots (faster)
+- **Wait for `networkidle` + 3 seconds** for fonts/animations
+- **Set user agent** for better site compatibility
+
+**🔍 CSS Debugging & Element Analysis**
+```python
+# Extract computed styles for debugging
+styles = await page.evaluate('''() => {
+    const element = document.querySelector('.target-selector');
+    if (!element) return {error: 'Element not found'};
+    const styles = window.getComputedStyle(element);
+    return {
+        display: styles.display,
+        width: styles.width,
+        height: styles.height,
+        position: styles.position,
+        flex: styles.flex,
+        margin: styles.margin,
+        padding: styles.padding,
+        zIndex: styles.zIndex
+    };
+}''')
+print('Computed Styles:', json.dumps(styles, indent=2))
+```
+
+**🚨 Nuclear Scrollbar Elimination Pattern (June 2025 Success)**
+```css
+/* CRITICAL: When individual overflow fixes fail, use nuclear approach */
+/* NUCLEAR SCROLLBAR ELIMINATION - MAXIMUM AGGRESSIVE APPROACH */
+html, body, .container, .container-fluid, .main-wrapper, .wrapper {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+/* FORCE HIDE ALL SCROLLBARS GLOBALLY */
+html {
+    overflow-x: hidden !important;
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+html::-webkit-scrollbar {
+    width: 0px !important;
+    background: transparent !important; /* Chrome/Safari */
+}
+
+body {
+    overflow-x: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+body::-webkit-scrollbar {
+    width: 0px !important;
+    background: transparent !important;
+}
+
+/* NUCLEAR NAVIGATION FIX - KILL ALL OVERFLOW */
+nav, nav *, .wsmenu, .wsmenu *, .navigation, .navigation * {
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* FORCE ALL CONTAINERS TO RESPECT BOUNDARIES */
+* {
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+}
+
+*::-webkit-scrollbar {
+    width: 0px !important;
+    height: 0px !important;
+    background: transparent !important;
+}
+```
+
+**Key Insights:**
+- **Individual element targeting fails** for complex navigation/framework overrides
+- **Global approach** (`*` selector) succeeds where specific selectors fail
+- **Cross-browser scrollbar hiding** essential (Firefox/IE/Chrome have different properties)
+- **Nuclear navigation fixes** (`nav *`) target all children, not just parent
+- **Success rate**: 100% vs <50% with targeted approaches
+
+**🚀 Advanced Playwright Patterns**
+
+**Performance Optimized (Disable Images/CSS)**
+```python
+# For faster testing when visuals aren't critical
+browser = await p.chromium.launch()
+context = await browser.new_context()
+await context.route('**/*.{png,jpg,jpeg,gif,webp,css}', lambda route: route.abort())
+page = await context.new_page()
+```
+
+**Mobile Device Testing**
+```python
+# iPhone simulation
+device = p.devices['iPhone 12']
+browser = await p.chromium.launch()
+context = await browser.new_context(**device)
+page = await context.new_page()
+```
+
+**Element-Specific Screenshots**
+```python
+# Screenshot specific elements
+element = await page.locator('.banner-container').first
+await element.screenshot(path='banner.jpg', type='jpeg', quality=80)
+```
+
+**Network Monitoring**
+```python
+# Monitor network requests
+await page.route('**/api/**', lambda route: print(f'API call: {route.request.url}'))
+```
+
+**⚡ Production-Ready Error Handling**
+```python
+async def robust_screenshot(url, filename):
+    async with async_playwright() as p:
+        browser = None
+        try:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            
+            # Set timeouts
+            page.set_default_timeout(30000)  # 30 second default
+            page.set_default_navigation_timeout(45000)  # 45 second navigation
+            
+            # Configure viewport and user agent
+            await page.set_viewport_size({'width': 1920, 'height': 1080})
+            await page.set_user_agent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
+            
+            # Navigate with comprehensive error handling
+            response = await page.goto(url, wait_until='networkidle', timeout=45000)
+            
+            if not response or response.status >= 400:
+                print(f'❌ HTTP Error {response.status if response else "No response"}: {url}')
+                return False
+            
+            # Wait for content to stabilize
+            await page.wait_for_load_state('networkidle', timeout=15000)
+            await page.wait_for_timeout(3000)
+            
+            # Take optimized screenshot
+            await page.screenshot(
+                path=filename,
+                type='jpeg',
+                quality=80,
+                full_page=False
+            )
+            
+            print(f'✅ Screenshot saved: {filename}')
+            return True
+            
+        except Exception as e:
+            print(f'❌ Error capturing {url}: {e}')
+            return False
+        finally:
+            if browser:
+                await browser.close()
+```
+
+**File Organization Best Practices:**
+- Save screenshots to `/home/user1/shawndev1/ASAPWebNew/` (allowed directory)
+- Use descriptive filenames: `local_generator_parts_1920x1080.jpg`
+- Include timestamp for multiple captures: `screenshot_20250623_1317.jpg`
+- Clean up old screenshots after analysis
+
+**📊 File Size Optimization Guidelines:**
+- **JPEG Quality Settings**:
+  - `quality=80`: Best balance (typical 100-300KB files)
+  - `quality=60`: Smaller files for quick comparisons
+  - `quality=95`: High quality for detailed analysis
+- **PNG vs JPEG**:
+  - PNG: 1-3MB+ files (avoid unless transparency needed)
+  - JPEG 80%: 100-500KB files (5-10x smaller, recommended)
+- **Cleanup Commands**:
+  ```bash
+  # Remove old screenshots
+  find /home/user1/shawndev1/ASAPWebNew/ -name "*.jpg" -name "*.png" -mtime +7 -delete
+  
+  # Check file sizes
+  ls -lh /home/user1/shawndev1/ASAPWebNew/*.jpg
+  ```
+
+**🎯 Quick Screenshot Verification Template**
+```python
+# One-liner for quick page verification
+python3 -c "
+import asyncio
+from playwright.async_api import async_playwright
+
+async def quick_shot():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        await page.set_viewport_size({'width': 1920, 'height': 1080})
+        await page.goto('http://localhost:8000/index.php?main_page=index&cPath=14')
+        await page.wait_for_load_state('networkidle')
+        await page.wait_for_timeout(3000)
+        await page.screenshot(path='/home/user1/shawndev1/ASAPWebNew/quick_check.jpg', type='jpeg', quality=80)
+        await browser.close()
+        print('✅ Quick screenshot: /home/user1/shawndev1/ASAPWebNew/quick_check.jpg')
+
+asyncio.run(quick_shot())
+"
+```
+
+### 🔍 CSS Debugging & Inspection Protocol
+
+#### **CSS Conflict Analysis Workflow**:
+```python
+# Step 1: Identify the actual DOM structure and computed styles
+async with async_playwright() as p:
+    browser = await p.chromium.launch(headless=True)
+    page = await browser.new_page()
+    await page.goto('http://localhost:8080')
+    
+    # Wait for target elements to load
+    await page.wait_for_selector('.target-selector', timeout=10000)
+    
+    # Extract computed styles for debugging
+    styles = await page.evaluate('''() => {
+        const element = document.querySelector('.target-selector');
+        const styles = window.getComputedStyle(element);
+        return {
+            display: styles.display,
+            position: styles.position,
+            flex: styles.flex,
+            width: styles.width,
+            maxWidth: styles.maxWidth,
+            float: styles.float
+        };
+    }''')
+    
+    print('Computed Styles:', json.dumps(styles, indent=2))
+```
+
+#### **Standard Desktop Resolution Testing**
+**🎯 CRITICAL**: Always use 1920x1080 resolution for desktop testing and banner verification
+
+**Default Resolution Protocol:**
+```python
+# MANDATORY: Set proper desktop resolution
+await page.set_viewport_size({'width': 1920, 'height': 1080})
+```
+
+#### **Resolution Standards:**
+- **Desktop**: 1920x1080 (primary), 1440x900 (secondary)
+- **Tablet**: 1024x768
+- **Mobile**: 375x667 (iPhone), 360x640 (Android)
+
+**Browser Options:**
+- **Chromium** (default): `await p.chromium.launch()`
+- **Firefox**: `await p.firefox.launch()` 
+- **WebKit**: `await p.webkit.launch()` (may have issues)
+
+**Interactive Mode:**
+```python
+# Visible browser for debugging
+browser = await p.chromium.launch(headless=False)
+```
+
+**Common Use Cases:**
+- Web testing and automation
+- Screenshot verification and CSS debugging  
+- Cross-browser compatibility testing
+- Web scraping with JavaScript rendering
+
+## 🤖 WritingMate.ai Multi-LLM Automation
+
+### **Trigger Phrases for Automatic Activation**
+When user mentions these patterns, automatically trigger WritingMate.ai automation:
+
+**📋 Direct LLM Access Requests:**
+- "check what **[model]** via writingmate has to say"
+- "ask **[model]** via WritingMate: **[question]**"
+- "use WritingMate to ask **[model]**: **[question]**"
+- "get **[model]**'s response via WritingMate"
+
+**🎯 Supported Model Names:**
+- **GPT-4**: "gpt4", "gpt-4", "chatgpt4", "gpt4o"
+- **Claude**: "claude", "claude3.5", "sonnet", "haiku"  
+- **Gemini**: "gemini", "gemini2.5", "thinking", "reasoning"
+- **Others**: "llama", "mistral", "cohere"
+
+### **Automation Script Execution**
+```bash
+# Multi-LLM automation script location
+cd /home/user1/shawndev1/claude-code-with-other-llms-via-browser/
+python3 multi_llm_automation.py --model="[target_model]" --message="[user_question]"
+
+# Examples:
+python3 multi_llm_automation.py --model="gpt-4" --message="Explain quantum computing"
+python3 multi_llm_automation.py --model="claude" --message="Write a Python function for sorting"
+python3 multi_llm_automation.py --model="gemini-thinking" --message="Solve: 25×4 + 15÷3"
+```
+
+### **Model Targeting Logic**
+**🔍 Model Name Resolution:**
+- Parse user request for model hints
+- Map to WritingMate.ai model names using fuzzy matching
+- Default to closest available model if exact match not found
+- Prioritize thinking models when reasoning is requested
+
+**📝 Automation Flow:**
+1. Launch persistent browser session with DevTools
+2. Navigate to WritingMate.ai if needed
+3. Switch to target model using search functionality
+4. Send user message via textarea + Enter key
+5. Wait for response and extract content
+6. Return response to user with model identification
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

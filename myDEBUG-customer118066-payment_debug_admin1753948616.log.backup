@@ -1,0 +1,139 @@
+-----START--VALUES--SQL-INSERT------Array
+(
+    [customers_id] => 118066
+    [customers_name] => Stephen Murrell
+    [customers_company] => 
+    [customers_street_address] => 6624 cr 616
+    [customers_suburb] => 
+    [customers_city] => Bushnell
+    [customers_postcode] => 33513
+    [customers_state] => Florida
+    [customers_country] => United States
+    [customers_telephone] => 7278100220
+    [customers_email_address] => sokufishing427@gmail.com
+    [customers_address_format_id] => 2
+    [delivery_name] => Stephen Murrell
+    [delivery_company] => 
+    [delivery_street_address] => 6624 cr 616
+    [delivery_suburb] => 
+    [delivery_city] => Bushnell
+    [delivery_postcode] => 33513
+    [delivery_state] => Florida
+    [delivery_country] => United States
+    [delivery_address_format_id] => 2
+    [billing_name] => Stephen Murrell
+    [billing_company] => 
+    [billing_street_address] => 6624 cr 616
+    [billing_suburb] => 
+    [billing_city] => Bushnell
+    [billing_postcode] => 33513
+    [billing_state] => Florida
+    [billing_country] => United States
+    [billing_address_format_id] => 2
+    [payment_method] => PayPal
+    [payment_module_code] => paypalwpp
+    [shipping_method] => ShipStation (USPS Ground Advantage - Package)
+    [shipping_module_code] => shipstation
+    [coupon_code] => 
+    [cc_type] => 
+    [cc_owner] => 
+    [cc_number] => 
+    [cc_expires] => 
+    [date_purchased] => now()
+    [orders_status] => 1
+    [order_total] => 40.098
+    [order_tax] => 0
+    [currency] => USD
+    [currency_value] => 1.000000
+    [ip_address] => . - .
+    [language_code] => en
+    [order_weight] => 0.25
+    [po_number] => 
+    [QuoteRef] => 
+    [out_of_stock] => 
+)
+-----START--VALUES--SQL-INSERT------Array
+(
+    [orders_id] => 1251883
+    [title] => Sub-Total:
+    [text] => $32.04
+    [value] => 32.04
+    [class] => ot_subtotal
+    [sort_order] => 100
+)
+-----START--VALUES--SQL-INSERT------Array
+(
+    [orders_id] => 1251883
+    [title] => ShipStation (USPS Ground Advantage - Package):
+    [text] => $8.06
+    [value] => 8.058
+    [class] => ot_shipping
+    [sort_order] => 200
+)
+-----START--VALUES--SQL-INSERT------Array
+(
+    [orders_id] => 1251883
+    [title] => Total:
+    [text] => $40.10
+    [value] => 40.098
+    [class] => ot_total
+    [sort_order] => 999
+)
+-----START--VALUES--SQL-INSERT------Array
+(
+    [orders_id] => 1251883
+    [orders_status_id] => 1
+    [date_added] => now()
+    [customer_notified] => 1
+    [comments] => 
+)
+-----START--VALUES--SQL-INSERT------Array
+(
+    [orders_id] => 1251883
+    [products_id] => 114
+    [products_model] => 2140103-A
+    [products_name] => Brush for ONAN 214-0103 and A053W559 - RV Genset, SEE NOTES
+    [products_price] => 9.2700
+    [final_price] => 9.27
+    [onetime_charges] => 0
+    [products_tax] => 0
+    [products_quantity] => 2
+    [products_priced_by_attribute] => 0
+    [product_is_free] => 0
+    [products_discount_type] => 0
+    [products_discount_type_from] => 0
+    [products_prid] => 114
+    [products_weight] => 0.0625
+    [products_virtual] => 0
+    [product_is_always_free_shipping] => 0
+    [products_quantity_order_min] => 2
+    [products_quantity_order_units] => 1
+    [products_quantity_order_max] => 0
+    [products_quantity_mixed] => 0
+    [products_mixed_discount_quantity] => 0
+)
+-----START--VALUES--SQL-INSERT------Array
+(
+    [orders_id] => 1251883
+    [products_id] => 985
+    [products_model] => 212-1276-03
+    [products_name] => 212-1276-03 Spring, Brush, Onan RV
+    [products_price] => 6.7500
+    [final_price] => 6.75
+    [onetime_charges] => 0
+    [products_tax] => 0
+    [products_quantity] => 2
+    [products_priced_by_attribute] => 0
+    [product_is_free] => 0
+    [products_discount_type] => 0
+    [products_discount_type_from] => 0
+    [products_prid] => 985
+    [products_weight] => 0.0625
+    [products_virtual] => 0
+    [product_is_always_free_shipping] => 0
+    [products_quantity_order_min] => 1
+    [products_quantity_order_units] => 1
+    [products_quantity_order_max] => 0
+    [products_quantity_mixed] => 1
+    [products_mixed_discount_quantity] => 1
+)

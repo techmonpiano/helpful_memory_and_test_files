@@ -1,0 +1,87 @@
+{
+  "export_info": {
+    "export_date": "2025-08-25",
+    "export_type": "matrix_users",
+    "source": "continuwuity_database_backup",
+    "total_users": 11
+  },
+  "users": [
+    {
+      "user_id": "@shawneepiano:hi.asapllc.com",
+      "localpart": "shawneepiano",
+      "server_name": "hi.asapllc.com",
+      "created_ts": 1724000009000,
+      "created_date": "2024-08-18T16:40:09Z"
+    },
+    {
+      "user_id": "@admin:hi.asapllc.com",
+      "localpart": "admin",
+      "server_name": "hi.asapllc.com",
+      "created_ts": 1720086400000,
+      "created_date": "2024-07-04T12:00:00Z"
+    },
+    {
+      "user_id": "@mmeadowcroft:hi.asapllc.com",
+      "localpart": "mmeadowcroft",
+      "server_name": "hi.asapllc.com",
+      "created_ts": 1720086400000,
+      "created_date": "2024-07-04T12:00:00Z"
+    },
+    {
+      "user_id": "@amanda:hi.asapllc.com",
+      "localpart": "amanda",
+      "server_name": "hi.asapllc.com",
+      "created_ts": 1720086400000,
+      "created_date": "2024-07-04T12:00:00Z"
+    },
+    {
+      "user_id": "@bschwalm:hi.asapllc.com",
+      "localpart": "bschwalm",
+      "server_name": "hi.asapllc.com",
+      "created_ts": 1720086400000,
+      "created_date": "2024-07-04T12:00:00Z"
+    },
+    {
+      "user_id": "@tkennedy:hi.asapllc.com",
+      "localpart": "tkennedy",
+      "server_name": "hi.asapllc.com",
+      "created_ts": 1720086400000,
+      "created_date": "2024-07-04T12:00:00Z"
+    },
+    {
+      "user_id": "@mschwalm:hi.asapllc.com",
+      "localpart": "mschwalm",
+      "server_name": "hi.asapllc.com",
+      "created_ts": 1720086400000,
+      "created_date": "2024-07-04T12:00:00Z"
+    },
+    {
+      "user_id": "@pbschwalm:hi.asapllc.com",
+      "localpart": "pbschwalm",
+      "server_name": "hi.asapllc.com",
+      "created_ts": 1720086400000,
+      "created_date": "2024-07-04T12:00:00Z"
+    },
+    {
+      "user_id": "@ellie:hi.asapllc.com",
+      "localpart": "ellie",
+      "server_name": "hi.asapllc.com",
+      "created_ts": 1720086400000,
+      "created_date": "2024-07-04T12:00:00Z"
+    },
+    {
+      "user_id": "@ellie2:hi.asapllc.com",
+      "localpart": "ellie2",
+      "server_name": "hi.asapllc.com",
+      "created_ts": 1720086400000,
+      "created_date": "2024-07-04T12:00:00Z"
+    },
+    {
+      "user_id": "@support:hi.asapllc.com",
+      "localpart": "support",
+      "server_name": "hi.asapllc.com",
+      "created_ts": 1720086400000,
+      "created_date": "2024-07-04T12:00:00Z"
+    }
+  ]
+}

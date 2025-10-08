@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 2: LBS CSS Files Test</title>
+    
+    <!-- Basic framework first -->
+    <link rel="stylesheet" type="text/css" href="includes/templates/goodwin/css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="includes/templates/goodwin/css/bootstrap.min.css">
+    
+    <!-- Add LBS CSS files - these are suspected culprits -->
+    <link rel="stylesheet" type="text/css" href="includes/templates/goodwin/css/lbs/style-dark.css">
+    <link rel="stylesheet" type="text/css" href="includes/templates/goodwin/css/lbs/style-light.css">
+    
+</head>
+<body>
+    <h1>Step 2: LBS CSS Files Test</h1>
+    <p>This test adds LBS style-dark.css and style-light.css which contain user-select: none rules.</p>
+    
+    <h2 class="custom-color">Header with custom-color class</h2>
+    <p>Another paragraph for testing selection across different elements.</p>
+    
+    <p class="empty_cart">Paragraph with empty_cart class - this was failing in production</p>
+    
+    <div class="contact-info-text">
+        <h3>Contact Information</h3>
+        <p>This mimics the contact page structure that was failing.</p>
+        <address>
+            123 Main Street<br>
+            City, State 12345<br>
+            Phone: (555) 123-4567
+        </address>
+    </div>
+    
+    <div class="contact-map">
+        <p>Map container content that should be selectable</p>
+        <iframe src="about:blank" style="width: 100%; height: 200px; border: 0;"></iframe>
+    </div>
+    
+    <div class="mainSlider">
+        <div class="slide-caption">
+            <div class="text-content">Slider text content for testing</div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Footer text that should also be selectable</p>
+    </footer>
+</body>
+</html>

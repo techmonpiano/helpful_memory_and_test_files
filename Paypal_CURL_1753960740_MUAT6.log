@@ -1,0 +1,77 @@
+2025-07-31 07:19:00
+-------------------
+(live transaction) --> https://api-3t.paypal.com/nvp
+Request Headers: 
+Array
+(
+    [0] => Content-Type: text/namevalue
+    [1] => X-VPS-Timeout: 90
+    [2] => X-VPS-VIT-Client-Type: PHP/cURL
+    [3] => X-VPS-VIT-Integration-Product: PHP::Zen Cart(R) - PayPal/NVP
+    [4] => X-VPS-VIT-Integration-Version: 1.5.7
+)
+
+
+Request Parameters: {DoDirectPayment} 
+Array
+(
+    [ACCT] => ************8422
+    [AMT] => 102.58
+    [BUTTONSOURCE] => ZenCart-DP_us
+    [CARDISSUE] => 
+    [CITY] => **
+    [CREDITCARDTYPE] => Visa
+    [CUSTOM] => DP-108552-1753960738
+    [CVV2] => ***
+    [EMAIL] => jbu***@gen***.com
+    [EXPDATE] => **
+    [FIRSTNAME] => **
+    [INVNUM] => 108552-1753960738-[AdvancedServiceAndPartsLLCASAP]
+    [ITEMAMT] => 92.39
+    [LASTNAME] => **
+    [L_AMT0] => 92.39
+    [L_NAME0] => Maxitrol Gas Reg. replaces Generac 051109, IMP-52, ES401, ES306 [555]
+    [L_NUMBER0] => IMP52
+    [L_QTY0] => 1
+    [NOTIFYURL] => https://www.partsfortechs.com/ipn_main_handler.php
+    [PAYMENTACTION] => Authorization
+    [PAYMENTREQUEST_0_PAYMENTACTION] => Authorization
+    [PHONENUM] => **
+    [SHIPPINGAMT] => 10.19
+    [SHIPTOCITY] => **
+    [SHIPTOCOUNTRY] => **
+    [SHIPTONAME] => **
+    [SHIPTOSTATE] => **
+    [SHIPTOSTREET] => **
+    [SHIPTOZIP] => **
+    [STATE] => **
+    [STREET] => **
+    [ZIP] => **
+    [METHOD] => DoDirectPayment
+    [CURRENCYCODE] => USD
+    [USER] => parts_api1.partsfortechs.com
+    [PWD] => ****************
+    [VERSION] => 124.0
+    [SIGNATURE] => ****************************************************kUVG
+)
+
+
+Response: 
+Array
+(
+    [TIMESTAMP] => 2025-07-31T11:19:00Z
+    [CORRELATIONID] => 9e44ad7d0a0cb
+    [ACK] => Success
+    [VERSION] => 124.0
+    [BUILD] => 56068150
+    [AMT] => 102.58
+    [CURRENCYCODE] => USD
+    [AVSCODE] => Y
+    [CVV2MATCH] => M
+    [TRANSACTIONID] => 4RG308269U883521H
+    [CURL_ERRORS] => 
+)
+
+
+DoDirectPayment, Elapsed: 2527ms -- Success
+

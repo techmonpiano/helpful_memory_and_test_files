@@ -1,0 +1,20 @@
+Aug-16-2025 08:18:00 (1755346680)
+before_process - DP-5
+resultset:
+Array
+(
+    [TIMESTAMP] => 2025-08-16T12:18:00Z
+    [CORRELATIONID] => 194531e6e81c2
+    [ACK] => Success
+    [VERSION] => 124.0
+    [BUILD] => 56068150
+    [AMT] => 41.64
+    [CURRENCYCODE] => USD
+    [AVSCODE] => Y
+    [CVV2MATCH] => M
+    [TRANSACTIONID] => 80D40371GK966720T
+    [CURL_ERRORS] => 
+)
+
+=================================
+

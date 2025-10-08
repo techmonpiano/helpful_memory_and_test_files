@@ -1,0 +1,58 @@
+{
+  "mcpServers": {
+    "puppeteer": {
+      "disabled": false,
+      "timeout": 60,
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-puppeteer"
+      ],
+      "env": {
+        "DOCKER_CONTAINER": "true"
+      }
+    },
+    "context7": {
+      "timeout": 60,
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "env": {
+        "DEFAULT_MINIMUM_TOKENS": ""
+      }
+    },
+    "tess": {
+      "timeout": 60,
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-tess"
+      ],
+      "env": {
+        "TESS_API_KEY": "70709|bud2zaVgV3bAizp2MY96iD0TW2PKCwxFMLQKwv3a099e04ff"
+      }
+    },
+    "desktop-commander": {
+      "disabled": false,
+      "timeout": 120,
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@wonderwhy-er/desktop-commander@latest"
+      ],
+      "env": {},
+      "autoApprove": [
+        "read_output",
+        "edit_block",
+        "search_code",
+        "read_file"
+      ]
+    }
+  }
+}

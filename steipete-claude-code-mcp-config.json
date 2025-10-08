@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "claude-code-steipete": {
+      "command": "npx",
+      "args": ["@steipete/claude-code-mcp@latest"],
+      "env": {}
+    }
+  }
+}

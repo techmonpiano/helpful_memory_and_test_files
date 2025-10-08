@@ -1,0 +1,123 @@
+-----START--VALUES--SQL-INSERT------Array
+(
+    [customers_id] => 117119
+    [customers_name] => Shawn Risser
+    [customers_company] => 
+    [customers_street_address] => 1051 E. Cumberland St.
+    [customers_suburb] => 
+    [customers_city] => Lebanon
+    [customers_postcode] => 17042
+    [customers_state] => Pennsylvania
+    [customers_country] => United States
+    [customers_telephone] => 7179490077
+    [customers_email_address] => shawn@prositedev.com
+    [customers_address_format_id] => 2
+    [delivery_name] => Shawn Risser
+    [delivery_company] => 
+    [delivery_street_address] => 1051 E. Cumberland St.
+    [delivery_suburb] => 
+    [delivery_city] => Lebanon
+    [delivery_postcode] => 17042
+    [delivery_state] => PA
+    [delivery_country] => United States
+    [delivery_address_format_id] => 2
+    [billing_name] => Shawn Risser
+    [billing_company] => 
+    [billing_street_address] => 1051 E. Cumberland St.
+    [billing_suburb] => 
+    [billing_city] => Lebanon
+    [billing_postcode] => 17042
+    [billing_state] => PA
+    [billing_country] => United States
+    [billing_address_format_id] => 2
+    [payment_method] => Credit Card
+    [payment_module_code] => paypaldp
+    [shipping_method] => ShipStation (UPS® Ground)
+    [shipping_module_code] => shipstation
+    [coupon_code] => 
+    [cc_type] => MasterCard
+    [cc_owner] => Shawn Risser
+    [cc_number] => 5474XX4118
+    [cc_expires] => 
+    [date_purchased] => now()
+    [orders_status] => 1
+    [order_total] => 37.6724
+    [order_tax] => 2.1324
+    [currency] => USD
+    [currency_value] => 1.000000
+    [ip_address] => . - .
+    [language_code] => en
+    [order_weight] => 0.1875
+    [po_number] => 
+    [QuoteRef] => 
+    [out_of_stock] => 
+)
+-----START--VALUES--SQL-INSERT------Array
+(
+    [orders_id] => 1252492
+    [title] => Sub-Total:
+    [text] => $25.82
+    [value] => 25.82
+    [class] => ot_subtotal
+    [sort_order] => 100
+)
+-----START--VALUES--SQL-INSERT------Array
+(
+    [orders_id] => 1252492
+    [title] => ShipStation (UPS® Ground):
+    [text] => $9.72
+    [value] => 9.72
+    [class] => ot_shipping
+    [sort_order] => 200
+)
+-----START--VALUES--SQL-INSERT------Array
+(
+    [orders_id] => 1252492
+    [title] => PA TAX 6.0%:
+    [text] => $2.13
+    [value] => 2.1324
+    [class] => ot_tax
+    [sort_order] => 500
+)
+-----START--VALUES--SQL-INSERT------Array
+(
+    [orders_id] => 1252492
+    [title] => Total:
+    [text] => $37.67
+    [value] => 37.6724
+    [class] => ot_total
+    [sort_order] => 999
+)
+-----START--VALUES--SQL-INSERT------Array
+(
+    [orders_id] => 1252492
+    [orders_status_id] => 1
+    [date_added] => now()
+    [customer_notified] => 1
+    [comments] => test
+)
+-----START--VALUES--SQL-INSERT------Array
+(
+    [orders_id] => 1252492
+    [products_id] => 1496
+    [products_model] => DWG1479
+    [products_name] => DWG1479, 3-Phase AC Volts Harness (Gen or Mains)
+    [products_price] => 25.8200
+    [final_price] => 25.82
+    [onetime_charges] => 0
+    [products_tax] => 6
+    [products_quantity] => 1
+    [products_priced_by_attribute] => 0
+    [product_is_free] => 0
+    [products_discount_type] => 0
+    [products_discount_type_from] => 0
+    [products_prid] => 1496
+    [products_weight] => 0.1875
+    [products_virtual] => 0
+    [product_is_always_free_shipping] => 0
+    [products_quantity_order_min] => 1
+    [products_quantity_order_units] => 1
+    [products_quantity_order_max] => 0
+    [products_quantity_mixed] => 1
+    [products_mixed_discount_quantity] => 1
+)

@@ -1,0 +1,19 @@
+🔄 Creating SSH session for localuser
+🔄 Target: localhost:22
+🔄 Log: /tmp/ssh_session_20250917_131356.log
+🔄 Step 1: Starting process with native MCP tools...
+🔄 Executing mcp__desktop-commander__start_process
+🔄 Starting process with command: persistent bash
+🔄 No PID found in output, checking recent sessions...
+🔄 Executing mcp__desktop-commander__list_sessions
+🔄 Listing active sessions
+❌ Could not extract PID from wrapper output
+🔄 Return code: 0
+🔄 Stdout: bash: line 1: persistent: command not found
+
+🔄 Stderr: [0;34m[MCP-WRAPPER][0m Using traditional shell argument format
+[0;34m[MCP-WRAPPER][0m Calling desktop-commander: start_process with args: persistent bash
+[0;34m[MCP-WRAPPER][0m Executing command: persistent bash
+[0;32m[SUCCESS][0m Command completed
+
+❌ Failed to start process

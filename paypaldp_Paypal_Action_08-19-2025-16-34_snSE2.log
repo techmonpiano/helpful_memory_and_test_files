@@ -1,0 +1,113 @@
+Aug-19-2025 16:34:35 (1755635675)
+getLineItemDetails 7 - subtotal comparisons
+[PRIVACY-SANITIZED] BEFORE line-item calcs: Array
+(
+    [AMT] => 37.67
+    [ITEMAMT] => 25.82
+    [TAXAMT] => 2.13
+    [SHIPPINGAMT] => 9.72
+    [SHIPDISCAMT] => 0
+    [HANDLINGAMT] => 0
+    [INSURANCEAMT] => 0
+)
+AFTER doing line-item calcs: Array
+(
+    [AMT] => 37.67
+    [ITEMAMT] => 25.82
+    [TAXAMT] => 1.55
+    [SHIPPINGAMT] => 10.3
+    [SHIPDISCAMT] => 0
+    [HANDLINGAMT] => 0
+    [INSURANCEAMT] => 0
+    [L_NUMBER0] => DWG1479
+    [L_NAME0] => DWG1479, 3-Phase AC Volts Harness (Gen or Mains) [1496]
+    [L_QTY0] => 1
+    [L_AMT0] => 25.82
+)
+
+=================================
+
+Aug-19-2025 16:34:35 (1755635675)
+getLineItemDetails 8
+[PRIVACY-SANITIZED] checking subtotals... 
+Array
+(
+    [calculated total] => 37.67
+    [AMT] => 37.67
+    [ITEMAMT] => 25.82
+    [TAXAMT] => 1.55
+    [SHIPPINGAMT] => 10.3
+)
+
+-------------------
+difference: 0  (abs+rounded: 0)
+=================================
+
+Aug-19-2025 16:34:35 (1755635675)
+getLineItemDetails 10
+[PRIVACY-SANITIZED] subtotals balance - okay
+=================================
+
+Aug-19-2025 16:34:35 (1755635675)
+before_process - DP-1
+[PRIVACY-SANITIZED] Beginning DP mode
+=================================
+
+Aug-19-2025 16:34:35 (1755635675)
+before_process - DP-4
+[PRIVACY-SANITIZED] options: Array
+(
+    [AMT] => 37.67
+    [ITEMAMT] => 25.82
+    [TAXAMT] => 1.55
+    [SHIPPINGAMT] => 10.3
+    [L_NUMBER0] => DWG1479
+    [L_NAME0] => DWG1479, 3-Phase AC Volts Harness (Gen or Mains) [1496]
+    [L_QTY0] => 1
+    [L_AMT0] => 25.82
+    [STREET] => **
+    [ZIP] => **
+    [CITY] => **
+    [STATE] => **
+    [EXPDATE] => **
+    [EMAIL] => sha***@pro***.com
+    [PHONENUM] => **
+    [BUTTONSOURCE] => ZenCart-DP_us
+    [CURRENCY] => USD
+    [CARDISSUE] => 
+    [CUSTOM] => DP-117119-1755635675
+    [INVNUM] => 117119-1755635675-[AdvancedServiceAndPartsLLCASAP]
+    [COUNTRY] => US
+    [PAYMENTACTION] => Authorization
+    [SHIPTONAME] => **
+    [SHIPTOSTREET] => **
+    [SHIPTOCITY] => **
+    [SHIPTOZIP] => **
+    [SHIPTOSTATE] => **
+    [SHIPTOCOUNTRY] => **
+)
+
+Rest of data: 
+37.67 ** ** [REDACTED-NAME] MasterCard
+=================================
+
+Aug-19-2025 16:34:36 (1755635676)
+before_process - DP-5
+[PRIVACY-SANITIZED] resultset:
+Array
+(
+    [TIMESTAMP] => 2025-08-19T20:34:36Z
+    [CORRELATIONID] => 990ffaa85d8a9
+    [ACK] => Success
+    [VERSION] => 124.0
+    [BUILD] => 56068150
+    [AMT] => 37.67
+    [CURRENCYCODE] => USD
+    [AVSCODE] => Y
+    [CVV2MATCH] => M
+    [TRANSACTIONID] => 99K53690AA6412127
+    [CURL_ERRORS] => 
+)
+
+=================================
+

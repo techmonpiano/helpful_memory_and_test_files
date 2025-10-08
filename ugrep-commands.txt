@@ -1,0 +1,36 @@
+# ugrep Advanced Search Commands
+
+## Context Extraction Commands
+
+# Clean sed version with variable
+TERM="def _verify_git_operation"; ugrep -n --color=always "$TERM" | sed -E "s#^([^:]*:[^:]*:).*(.{0,30}$TERM.{0,30}).*#\1 >>> ...\2...#"
+
+# Professional format with colors
+TERM="def _verify_git_operation"; ugrep -n "$TERM" | sed "s#^\([^:]*\):\([^:]*\):.*\(.\{30\}$TERM.\{30\}\).*#\x1b[1;36m\1\x1b[0m:\x1b[1;33m\2\x1b[0m:\n    \x1b[32m▶\x1b[0m \x1b[90m...\x1b[0m\x1b[1;31m\3\x1b[0m\x1b[90m...\x1b[0m\n#"
+
+# Clean spaced format with perl
+TERM="def _verify_git_operation"; ugrep -n --color=always "$TERM" | perl -pe "s/^(.*?):(\d+):.*?(.{0,40}$TERM.{0,40}).*/$1:$2:\n    >>>   ...$3...\n/"
+
+# Date filtered version
+TERM="def _verify_git_operation"; find . -newermt "2025-08-14" ! -newermt "2025-08-15" -type f -exec ugrep -n "$TERM" {} + | sed -E "s#^([^:]*:[^:]*:).*(.{0,30}$TERM.{0,30}).*#\1 >>> ...\2...#"
+
+## Basic Commands
+
+# Simple search with line numbers
+ugrep -n "pattern"
+
+# Search specific file types
+ugrep -t json "pattern"
+
+# Interactive mode
+ugrep -Q
+
+# Date filtered search
+find . -newermt "2025-08-14" ! -newermt "2025-08-15" -type f -exec ugrep -n "pattern" {} +
+
+## Usage Notes
+
+- Change context length by modifying {0,30} to desired number of characters
+- Use --color=always to preserve colors in pipes
+- Extended regex (-E) allows more readable patterns
+- Variables allow easy search term changes
