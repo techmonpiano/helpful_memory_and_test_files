@@ -3271,6 +3271,41 @@ When updating a running application:
 - ❌ **Without process management**: Old version continues running stale bytecode, confusing users
 - ✅ **With process management**: New version automatically launches with fresh imports
 
+### ⚠️ CRITICAL WARNING: Duplicate Process Detection Bug
+
+**Common Bug:** Searching for BOTH wrapper scripts AND Python processes causes duplicate detection, leading to:
+- Multiple instances of the same app running simultaneously
+- Two system tray icons appearing after installation
+- Incorrect process count ("2 processes found" when only 1 exists)
+
+**Root Cause:** Launcher scripts (bash wrappers) spawn Python processes as children. When you search for both the wrapper name and the Python script name, tools like `pgrep` and `ps aux` find BOTH the parent wrapper AND the child Python process, counting them as separate instances.
+
+**Example - WRONG Approach:**
+```python
+# ❌ WRONG: Searches for both wrapper and Python process
+patterns = ['voice_typer_tray_qt6.py', 'voice-typer']  
+# Result: Finds 2 PIDs for the same app!
+#   PID 1234: /bin/bash /path/voice-typer (parent wrapper)
+#   PID 1235: python3 voice_typer_tray_qt6.py (child process)
+```
+
+**Correct Approach:**
+```python
+# ✅ CORRECT: Only search for the actual Python process
+patterns = ['voice_typer_tray_qt6.py']  # Just the Python script
+# Result: Finds 1 PID (the actual running process)
+#   PID 1235: python3 voice_typer_tray_qt6.py
+```
+
+**Key Principle:** 
+- **Search ONLY for the long-lived process** (the Python script that actually runs)
+- **DO NOT search for wrapper/launcher scripts** (these are short-lived parent processes)
+- If your app uses `myapp.py` launched by a `myapp` bash wrapper, only detect `myapp.py`
+
+**Case Study:** Voice Typer (commit 28188bb) fixed this exact issue by removing 'voice-typer' wrapper from detection patterns, eliminating duplicate process detection and preventing multiple tray icons.
+
+---
+
 ### Pattern 1: Process Detection
 
 Detect running application instances before installation starts.
@@ -3285,7 +3320,11 @@ def detect_running_application(app_name, patterns=None):
     Args:
         app_name: Name of application for user messages
         patterns: List of process name patterns to search for
-                 e.g., ['myapp.py', 'myapp-tray']
+                 e.g., ['myapp.py'] - ONLY the Python script, NOT wrapper scripts!
+                 
+    CRITICAL: Only search for the actual long-lived process (e.g., 'myapp.py'),
+              NOT wrapper/launcher scripts (e.g., 'myapp'). Including wrapper scripts
+              causes duplicate detection since wrapper is parent of Python process.
 
     Returns:
         List of (pid, cmdline) tuples, or empty list if not running
@@ -3297,6 +3336,7 @@ def detect_running_application(app_name, patterns=None):
 
     try:
         # Try pgrep first (most efficient, available on Unix/Linux)
+        # Only search for Python process, not bash wrapper (wrapper is parent/short-lived)
         for pattern in patterns:
             result = subprocess.run(
                 ['pgrep', '-f', pattern],
@@ -3334,6 +3374,7 @@ def detect_running_application(app_name, patterns=None):
             )
 
             for line in result.stdout.split('\n'):
+                # Only match Python process, not bash wrapper
                 for pattern in patterns:
                     if pattern in line:
                         parts = line.split()
@@ -3367,10 +3408,14 @@ def stop_running_processes(running_processes, auto_mode=False, verbose=False):
     Args:
         running_processes: List of (pid, cmdline) from detect_running_application()
         auto_mode: If True, stop without user confirmation
+                   Typically enabled by --force or --user flags
         verbose: Show detailed progress
 
     Returns:
         True if all stopped successfully, False if any failed
+        
+    Note: When calling from main installer, set auto_mode = force or args.user
+          to enable silent process killing for both --force and --user installs.
     """
     if not running_processes:
         return True
@@ -3443,6 +3488,80 @@ def stop_running_processes(running_processes, auto_mode=False, verbose=False):
     print(f"✓ Stopped {stopped_count} process(es)")
     return True
 ```
+
+### Pattern 2.5: Process Stop Verification (CRITICAL)
+
+**Why this matters:** Killing a process doesn't guarantee it stops immediately. Without verification, you risk:
+- Installing new files while old process still running (file conflicts, race conditions)
+- Restarting app on top of lingering zombie process (duplicate instances)
+- Users seeing multiple app instances after update
+
+**Pattern:** After killing processes, verify they actually stopped before continuing installation.
+
+```python
+import time
+
+def verify_processes_stopped(app_name, patterns, verbose=False):
+    """
+    Verify that processes have fully terminated after stop attempt.
+    
+    Args:
+        app_name: Application name for messages
+        patterns: Same patterns used in detect_running_application()
+        verbose: Show detailed progress
+        
+    Returns:
+        True if all stopped, False if any still running
+    """
+    # Allow time for processes to fully terminate
+    time.sleep(2)
+    
+    # Re-check if any processes still running
+    still_running = detect_running_application(app_name, patterns)
+    
+    if still_running:
+        print("\n⚠️  Warning: Some processes still running after stop attempt:")
+        for pid, cmdline in still_running:
+            print(f"   • PID {pid}: {cmdline[:60]}...")
+        return False
+    
+    if verbose:
+        print("✓ All processes stopped and verified")
+    
+    return True
+
+
+# Usage in main installation flow:
+def install_with_verification(user_install=False, force=False, args=None):
+    """Installation with process stop verification"""
+    
+    patterns = ['myapp.py']  # Only Python process, not wrapper!
+    running_processes = detect_running_application("MyApp", patterns)
+    
+    if running_processes:
+        auto_mode = force or args.user  # --user also enables auto-kill
+        
+        if not stop_running_processes(running_processes, auto_mode):
+            raise InstallerError("Cannot proceed while application is running")
+        
+        # CRITICAL: Verify processes actually stopped
+        if not verify_processes_stopped("MyApp", patterns):
+            raise InstallerError("Failed to stop all processes - cannot safely update")
+        
+        print("✓ All processes stopped and verified")
+    
+    # Now safe to proceed with installation...
+```
+
+**Key Benefits:**
+- Prevents race conditions during file updates
+- Prevents launching duplicate instances
+- Gives clear error if process won't die (permission issues, etc.)
+- 2-second delay ensures OS has fully cleaned up process resources
+
+**Case Study:** Voice Typer (commit 28188bb) added this verification to prevent issues where old processes would continue running despite kill attempts, leading to stale code execution and duplicate tray icons.
+
+---
 
 ### Pattern 3: Cache Busting for Clean Updates
 
@@ -3583,12 +3702,84 @@ def launch_application_after_update(install_paths, app_executable, verbose=False
         return False
 ```
 
+### Pattern 4.5: Pre-Launch Zombie Detection (CRITICAL)
+
+**Why this matters:** Even after stopping and verifying process termination, zombie processes can linger due to:
+- Delayed cleanup by OS
+- Process respawning by systemd/cron
+- Parent process not fully terminated
+- File locks not released
+
+Launching on top of a zombie process creates duplicate instances!
+
+**Pattern:** Always check for zombie processes immediately before auto-relaunch.
+
+```python
+import time
+
+def safe_relaunch_after_update(app_name, patterns, install_paths, app_executable, verbose=False):
+    """
+    Safely relaunch application with zombie process detection.
+    
+    Args:
+        app_name: Application name for messages
+        patterns: Process detection patterns (Python script only, not wrapper!)
+        install_paths: Dictionary with 'bin_dir' path
+        app_executable: Executable name to launch
+        verbose: Show detailed progress
+        
+    Returns:
+        True if launched successfully, False if skipped or failed
+    """
+    # Brief delay to ensure full cleanup from previous termination
+    time.sleep(1)
+    
+    # Check for zombie processes before launching
+    zombie_check = detect_running_application(app_name, patterns)
+    
+    if zombie_check:
+        print("\n⚠️  Warning: Detected running process before relaunch:")
+        for pid, cmdline in zombie_check:
+            print(f"   • PID {pid}: {cmdline[:60]}...")
+        print("   Skipping auto-relaunch to prevent duplicates")
+        print(f"   You can manually start it with: {app_executable}")
+        return False
+    
+    # Safe to launch - no zombies detected
+    print("\n🔄 Restarting application...")
+    return launch_application_after_update(install_paths, app_executable, verbose)
+
+
+# Example usage in main installation:
+if running_processes:
+    # Use safe relaunch with zombie detection
+    if safe_relaunch_after_update("MyApp", ['myapp.py'], paths, "myapp-tray"):
+        print("   Application is now running!")
+    else:
+        print(f"   You can manually start it with: myapp-tray")
+```
+
+**Key Benefits:**
+- Prevents duplicate application instances
+- Prevents multiple system tray icons
+- Detects respawned processes (systemd, cron, etc.)
+- Gives user clear message if manual start needed
+
+**Timing:**
+- 1-second delay allows OS to fully clean up resources
+- Re-detection catches any last-second process spawning
+- Fast enough not to annoy users, long enough to be reliable
+
+**Case Study:** Voice Typer (commit 28188bb) added this check after users reported seeing two tray icons after updates. The issue occurred when the Python process took longer to terminate than expected, and the new instance launched while old one was still shutting down.
+
+---
+
 ### Pattern 5: Complete Installation Flow Integration
 
 Integrate all patterns into your main installation function.
 
 ```python
-def install_application(user_install=False, force=False):
+def install_application(user_install=False, force=False, args=None):
     """Complete installation with process lifecycle management"""
 
     paths = get_install_paths(user_install)
@@ -3598,12 +3789,21 @@ def install_application(user_install=False, force=False):
         print()
 
         # STEP 1: BEFORE INSTALLATION - Stop running processes
-        running_processes = detect_running_application("Application",
-                                                       ['app.py', 'app-tray'])
+        # CRITICAL: Only search for Python process, NOT wrapper script!
+        patterns = ['app.py']  # Not 'app-tray' wrapper!
+        running_processes = detect_running_application("Application", patterns)
+        
         if running_processes:
-            auto_mode = force  # Skip prompt if --force flag
+            # --user flag also enables auto-kill (silent process termination)
+            auto_mode = force or (args and args.user)
+            
             if not stop_running_processes(running_processes, auto_mode):
                 raise Exception("Cannot proceed while application is running")
+            
+            # CRITICAL: Verify processes actually stopped (Pattern 2.5)
+            if not verify_processes_stopped("Application", patterns):
+                raise Exception("Failed to stop all processes - cannot safely update")
+            
             print()
 
         # STEP 2: PERFORM INSTALLATION
@@ -3624,12 +3824,12 @@ def install_application(user_install=False, force=False):
         print(f"✅ Installation complete!")
 
         # STEP 5: AUTO-RESTART if it was running
+        # CRITICAL: Use safe relaunch with zombie detection (Pattern 4.5)
         if running_processes:
-            print("\n🔄 Restarting application...")
-            if launch_application_after_update(paths, "app-tray"):
+            if safe_relaunch_after_update("Application", patterns, paths, "app-tray"):
                 print("   Application is now running!")
             else:
-                print(f"   You can start it with: app-tray")
+                print(f"   You can manually start it with: app-tray")
 
         return True
 
@@ -3641,24 +3841,34 @@ def install_application(user_install=False, force=False):
 ### Best Practices & Common Pitfalls
 
 **✅ BEST PRACTICES:**
+- **CRITICAL:** Only detect Python process, NEVER wrapper scripts (prevents duplicate detection)
 - Always detect and stop processes BEFORE installing new files
+- **CRITICAL:** Verify processes stopped after kill attempt (2-second delay + re-check)
+- **CRITICAL:** Check for zombies before relaunch (1-second delay + detection)
 - Always clear caches AFTER installing files but BEFORE launching
 - Use SIGTERM first (graceful) then SIGKILL (force) if needed
 - Give processes 5 seconds to shut down cleanly
-- Skip user confirmation with `--force` flag for automated updates
+- Enable auto-kill with BOTH `--force` and `--user` flags for silent updates
 - Verify launch by re-detecting the process
 - Only auto-launch if it was running before update
+- Fail installation if processes won't stop (don't proceed with update)
+- Skip relaunch if zombie detected (prevent duplicates)
 - Log all process operations for debugging
 
 **❌ PITFALLS TO AVOID:**
+- **CRITICAL:** Including wrapper scripts in detection patterns → Duplicate detection
+- **CRITICAL:** Not verifying processes stopped → Race conditions, stale code
+- **CRITICAL:** Not checking for zombies before relaunch → Multiple instances
 - Not clearing Python caches → Users get old version's code
 - Killing processes immediately → Data loss and incomplete cleanup
 - Launching app synchronously → Installer blocks until app exits
 - Not detecting startup → Silent failures, user doesn't know app failed to start
 - Auto-launching even if user stopped app → Unwanted app starting
+- Only enabling auto-kill for --force → --user installs still prompt
 - Ignoring permission errors → Cryptic failures for non-root users
 - Not handling missing pgrep → Fails on systems without it
 - Launching before cache is cleared → Race condition loading old bytecode
+- Proceeding with install when processes won't die → File corruption risk
 
 ---
 
