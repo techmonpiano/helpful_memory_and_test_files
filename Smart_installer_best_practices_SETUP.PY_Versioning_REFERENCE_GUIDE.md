@@ -3261,6 +3261,407 @@ Requirement already satisfied: PyQt6==6.6.1
 
 ---
 
+## Process Lifecycle Management During Updates
+
+**Critical for seamless updates:** Managing running application instances during installation ensures zero data loss, clean bytecode caching, and automatic restart. This is essential for applications that run as system services or background processes.
+
+### Why This Matters
+
+When updating a running application:
+- ❌ **Without process management**: Old version continues running stale bytecode, confusing users
+- ✅ **With process management**: New version automatically launches with fresh imports
+
+### Pattern 1: Process Detection
+
+Detect running application instances before installation starts.
+
+```python
+import subprocess
+
+def detect_running_application(app_name, patterns=None):
+    """
+    Detect running application processes.
+
+    Args:
+        app_name: Name of application for user messages
+        patterns: List of process name patterns to search for
+                 e.g., ['myapp.py', 'myapp-tray']
+
+    Returns:
+        List of (pid, cmdline) tuples, or empty list if not running
+    """
+    if patterns is None:
+        patterns = [app_name]
+
+    running_processes = []
+
+    try:
+        # Try pgrep first (most efficient, available on Unix/Linux)
+        for pattern in patterns:
+            result = subprocess.run(
+                ['pgrep', '-f', pattern],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+
+            if result.returncode == 0:
+                pids = result.stdout.strip().split('\n')
+                for pid in pids:
+                    if pid:
+                        try:
+                            # Get full command line for each process
+                            cmdline = subprocess.run(
+                                ['ps', '-p', pid, '-o', 'cmd='],
+                                capture_output=True,
+                                text=True,
+                                timeout=5
+                            ).stdout.strip()
+                            running_processes.append((int(pid), cmdline))
+                        except:
+                            pass
+
+        return running_processes
+
+    except FileNotFoundError:
+        # pgrep not available, fall back to ps aux parsing
+        try:
+            result = subprocess.run(
+                ['ps', 'aux'],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+
+            for line in result.stdout.split('\n'):
+                for pattern in patterns:
+                    if pattern in line:
+                        parts = line.split()
+                        if len(parts) > 1:
+                            try:
+                                pid = int(parts[1])
+                                cmdline = ' '.join(parts[10:])
+                                running_processes.append((pid, cmdline))
+                            except:
+                                pass
+
+            return running_processes
+        except Exception:
+            return []
+    except Exception:
+        return []
+```
+
+### Pattern 2: Graceful Process Shutdown
+
+Stop running instances with proper cleanup time.
+
+```python
+import signal
+import time
+
+def stop_running_processes(running_processes, auto_mode=False, verbose=False):
+    """
+    Gracefully stop running application processes.
+
+    Args:
+        running_processes: List of (pid, cmdline) from detect_running_application()
+        auto_mode: If True, stop without user confirmation
+        verbose: Show detailed progress
+
+    Returns:
+        True if all stopped successfully, False if any failed
+    """
+    if not running_processes:
+        return True
+
+    # Ask user permission unless auto_mode
+    if not auto_mode:
+        print("\n⚠️  Application is currently running!")
+        print("   These processes must be stopped before updating:\n")
+        for pid, cmdline in running_processes:
+            print(f"   • PID {pid}: {cmdline[:70]}...")
+
+        response = input("\n   Stop these processes? [Y/n]: ").strip().lower()
+        if response and response not in ('y', 'yes'):
+            print("   Installation cancelled.")
+            return False
+
+    print("\n🛑 Stopping processes...")
+
+    stopped_count = 0
+    failed_pids = []
+
+    for pid, cmdline in running_processes:
+        try:
+            if verbose:
+                print(f"   Sending SIGTERM to PID {pid}...")
+
+            # Send SIGTERM for graceful shutdown
+            os.kill(pid, signal.SIGTERM)
+
+            # Wait up to 5 seconds for process to terminate
+            for attempt in range(50):  # 50 × 0.1s = 5 seconds
+                try:
+                    os.kill(pid, 0)  # Check if process exists
+                    time.sleep(0.1)
+                except ProcessLookupError:
+                    # Process terminated successfully
+                    stopped_count += 1
+                    if verbose:
+                        print(f"   ✓ PID {pid} stopped gracefully")
+                    break
+            else:
+                # Process didn't stop after 5 seconds - force kill
+                if verbose:
+                    print(f"   Process {pid} didn't stop, forcing...")
+                try:
+                    os.kill(pid, signal.SIGKILL)
+                    time.sleep(0.5)
+                    stopped_count += 1
+                    if verbose:
+                        print(f"   ✓ PID {pid} force stopped")
+                except:
+                    failed_pids.append(pid)
+
+        except ProcessLookupError:
+            # Already terminated
+            stopped_count += 1
+            if verbose:
+                print(f"   ✓ PID {pid} already stopped")
+        except PermissionError:
+            print(f"   ✗ Permission denied stopping PID {pid}")
+            failed_pids.append(pid)
+        except Exception as e:
+            print(f"   ✗ Error stopping PID {pid}: {e}")
+            failed_pids.append(pid)
+
+    if failed_pids:
+        print(f"\n⚠️  Failed to stop {len(failed_pids)} process(es): {failed_pids}")
+        return False
+
+    print(f"✓ Stopped {stopped_count} process(es)")
+    return True
+```
+
+### Pattern 3: Cache Busting for Clean Updates
+
+**Critical issue:** Python caches compiled bytecode (.pyc files). Without clearing these, the old version's compiled code may be loaded instead of new code, even after file updates.
+
+```python
+from pathlib import Path
+
+def clear_python_caches(install_paths, verbose=False):
+    """
+    Clear Python bytecode caches from installation and source directories.
+
+    Prevents stale .pyc files from being loaded instead of updated .py files.
+    This is CRITICAL for ensuring users get the new version's code.
+
+    Args:
+        install_paths: Dictionary with 'app_dir' path
+        verbose: Show detailed progress
+    """
+    print("\n🧹 CLEARING PYTHON CACHES")
+
+    directories_to_clean = []
+
+    # 1. Installed directory
+    app_dir = Path(install_paths['app_dir'])
+    directories_to_clean.append(("Installed", app_dir))
+
+    # 2. Source directory (where setup.py runs from)
+    source_dir = Path(__file__).resolve().parent
+    if source_dir.exists() and source_dir != app_dir:
+        if (source_dir / "setup.py").exists():
+            directories_to_clean.append(("Source", source_dir))
+
+    total_cleared = 0
+
+    for dir_type, base_dir in directories_to_clean:
+        cleared = 0
+        print(f"  🧹 Clearing {dir_type} directory: {base_dir}")
+
+        # Remove __pycache__ directories
+        for pycache_dir in base_dir.rglob('__pycache__'):
+            try:
+                import shutil
+                shutil.rmtree(pycache_dir)
+                cleared += 1
+                if verbose:
+                    print(f"    ✓ Removed __pycache__")
+            except Exception as e:
+                if verbose:
+                    print(f"    ⚠️  Could not remove pycache: {e}")
+
+        # Remove .pyc files
+        for pyc_file in base_dir.rglob('*.pyc'):
+            try:
+                pyc_file.unlink()
+                cleared += 1
+                if verbose:
+                    print(f"    ✓ Removed .pyc file")
+            except Exception as e:
+                if verbose:
+                    print(f"    ⚠️  Could not remove .pyc: {e}")
+
+        # Remove .pyo files (optimized bytecode)
+        for pyo_file in base_dir.rglob('*.pyo'):
+            try:
+                pyo_file.unlink()
+                cleared += 1
+                if verbose:
+                    print(f"    ✓ Removed .pyo file")
+            except Exception as e:
+                if verbose:
+                    print(f"    ⚠️  Could not remove .pyo: {e}")
+
+        if cleared > 0:
+            print(f"    ✅ Cleared {cleared} cache files")
+        else:
+            print(f"    ✓ No cache files found")
+
+        total_cleared += cleared
+
+    if total_cleared > 0:
+        print(f"  ✅ TOTAL: {total_cleared} cache files removed")
+    else:
+        print(f"  ✓ Cache is clean")
+```
+
+### Pattern 4: Auto-Launch After Update
+
+Restart the application if it was running before.
+
+```python
+def launch_application_after_update(install_paths, app_executable, verbose=False):
+    """
+    Launch application after successful update.
+
+    Args:
+        install_paths: Dictionary with 'bin_dir' path
+        app_executable: Name of executable (e.g., 'myapp-tray')
+        verbose: Show detailed progress
+
+    Returns:
+        True if launched successfully, False otherwise
+    """
+    try:
+        script_path = os.path.join(install_paths['bin_dir'], app_executable)
+
+        if not os.path.exists(script_path):
+            if verbose:
+                print(f"⚠️  Executable not found: {script_path}")
+            return False
+
+        print("\n🚀 Launching application...")
+
+        # Launch in background (detached from terminal)
+        subprocess.Popen(
+            [script_path],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True  # Detach from parent process
+        )
+
+        time.sleep(1)  # Give app time to start
+
+        # Verify startup
+        running = detect_running_application("app", [app_executable])
+        if running:
+            print("✓ Application launched successfully")
+            if verbose:
+                print(f"  PID: {running[0][0]}")
+            return True
+        else:
+            print("⚠️  Application may not have started (check manually)")
+            return False
+
+    except Exception as e:
+        if verbose:
+            print(f"⚠️  Error launching: {e}")
+        return False
+```
+
+### Pattern 5: Complete Installation Flow Integration
+
+Integrate all patterns into your main installation function.
+
+```python
+def install_application(user_install=False, force=False):
+    """Complete installation with process lifecycle management"""
+
+    paths = get_install_paths(user_install)
+
+    try:
+        print(f"🎯 Installing Application v{VERSION}")
+        print()
+
+        # STEP 1: BEFORE INSTALLATION - Stop running processes
+        running_processes = detect_running_application("Application",
+                                                       ['app.py', 'app-tray'])
+        if running_processes:
+            auto_mode = force  # Skip prompt if --force flag
+            if not stop_running_processes(running_processes, auto_mode):
+                raise Exception("Cannot proceed while application is running")
+            print()
+
+        # STEP 2: PERFORM INSTALLATION
+        print("📦 Installing files...")
+        install_application_files(paths)
+
+        # STEP 3: CLEAN PYTHON CACHES - Critical!
+        clear_python_caches(paths, verbose=False)
+
+        print("🔧 Creating launcher...")
+        create_launcher(paths)
+
+        print("🖥️  Setting up desktop integration...")
+        setup_desktop(paths)
+
+        # STEP 4: SUCCESS
+        print()
+        print(f"✅ Installation complete!")
+
+        # STEP 5: AUTO-RESTART if it was running
+        if running_processes:
+            print("\n🔄 Restarting application...")
+            if launch_application_after_update(paths, "app-tray"):
+                print("   Application is now running!")
+            else:
+                print(f"   You can start it with: app-tray")
+
+        return True
+
+    except Exception as e:
+        print(f"❌ Installation failed: {e}")
+        return False
+```
+
+### Best Practices & Common Pitfalls
+
+**✅ BEST PRACTICES:**
+- Always detect and stop processes BEFORE installing new files
+- Always clear caches AFTER installing files but BEFORE launching
+- Use SIGTERM first (graceful) then SIGKILL (force) if needed
+- Give processes 5 seconds to shut down cleanly
+- Skip user confirmation with `--force` flag for automated updates
+- Verify launch by re-detecting the process
+- Only auto-launch if it was running before update
+- Log all process operations for debugging
+
+**❌ PITFALLS TO AVOID:**
+- Not clearing Python caches → Users get old version's code
+- Killing processes immediately → Data loss and incomplete cleanup
+- Launching app synchronously → Installer blocks until app exits
+- Not detecting startup → Silent failures, user doesn't know app failed to start
+- Auto-launching even if user stopped app → Unwanted app starting
+- Ignoring permission errors → Cryptic failures for non-root users
+- Not handling missing pgrep → Fails on systems without it
+- Launching before cache is cleared → Race condition loading old bytecode
+
+---
+
 ## Advanced Features to Consider
 
 ### Auto-Update Mechanism
